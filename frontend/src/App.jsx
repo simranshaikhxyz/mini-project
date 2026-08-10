@@ -1,0 +1,71 @@
+import { Routes, Route } from "react-router-dom";
+
+import Header from "./components/Header";
+import Footer from "./components/Footer";
+
+import Home from "./pages/Home";
+import About from "./pages/About";
+import Products from "./pages/Products";
+import ProductDetails from "./pages/ProductDetails";
+import OrderPage from "./pages/OrderPage";
+import MyOrders from "./pages/MyOrders";
+import Contact from "./pages/Contact";
+import Profile from "./pages/Profile";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+
+import AdminDashboard from "./admin/pages/AdminDashboard";
+import AddProduct from "./admin/pages/AddProduct";
+import ManageProducts from "./admin/pages/ManageProducts";
+import ManageOrders from "./admin/pages/ManageOrders";
+import Reports from "./admin/pages/Reports";
+
+function App() {
+  return (
+    <div className="flex flex-col min-h-screen bg-slate-50/50 selection:bg-indigo-500 selection:text-white">
+      {/* Navigation Header */}
+      <Header />
+
+      {/* Main Content Area (With sticky-footer flex-grow) */}
+      <main className="flex-grow">
+        <Routes>
+          {/* Public & Customer Routes */}
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/products" element={<Products />} />
+          <Route path="/products/:id" element={<ProductDetails />} />
+          <Route path="/products/:id/order" element={<OrderPage />} />
+          <Route path="/myorders" element={<MyOrders />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+
+          {/* Admin Back-Office Routes */}
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route
+            path="/admin/add-product"
+            element={<AddProduct />}
+          />
+          <Route
+            path="/admin/products"
+            element={<ManageProducts />}
+          />
+          <Route
+            path="/admin/orders"
+            element={<ManageOrders />}
+          />
+          <Route
+            path="/admin/reports"
+            element={<Reports />}
+          />
+        </Routes>
+      </main>
+
+      {/* Site Footer */}
+      <Footer />
+    </div>
+  );
+}
+
+export default App;
