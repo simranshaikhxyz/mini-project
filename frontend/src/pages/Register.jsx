@@ -12,6 +12,7 @@ function Register() {
     email: "",
     password: "",
     confirmPassword: "",
+    agreedToTerms: false,
   });
 
   const [loading, setLoading] = useState(false);
@@ -25,7 +26,7 @@ function Register() {
 
     if (!formData.name.trim()) {
       newErrors.name = "Full name is required.";
-    } else if (formData.name.length < 3) {
+    } else if (formData.name.trim().length < 3) {
       newErrors.name = "Name must be at least 3 characters.";
     }
 
@@ -47,14 +48,20 @@ function Register() {
       newErrors.confirmPassword = "Passwords do not match.";
     }
 
+    if (!formData.agreedToTerms) {
+      newErrors.agreedToTerms = "You must agree to the Terms & Privacy Policy.";
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleChange = (e) => {
+    const value = e.target.type === "checkbox" ? e.target.checked : e.target.value;
+
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [e.target.name]: value,
     });
 
     setErrors({
@@ -74,8 +81,8 @@ function Register() {
     try {
       setLoading(true);
       const { data } = await API.post("/auth/register", {
-        name: formData.name,
-        email: formData.email,
+        name: formData.name.trim(),
+        email: formData.email.trim().toLowerCase(),
         password: formData.password,
       });
 
@@ -96,8 +103,8 @@ function Register() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50/50 px-6 py-12 text-slate-800 antialiased font-sans">
-      <div className="bg-white w-full max-w-md p-8 rounded-2xl border border-slate-150 shadow-sm">
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 px-6 py-12 text-slate-800 antialiased font-sans">
+      <div className="bg-white w-full max-w-md p-8 rounded-2xl border border-slate-200 shadow-sm">
         
         {/* Header Block */}
         <div className="text-center mb-8">
@@ -114,12 +121,14 @@ function Register() {
           
           {/* Full Name */}
           <div>
-            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">
+            <label htmlFor="name" className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">
               Full Name
             </label>
             <input
+              id="name"
               type="text"
               name="name"
+              autoComplete="name"
               placeholder="John Doe"
               value={formData.name}
               onChange={handleChange}
@@ -138,12 +147,14 @@ function Register() {
 
           {/* Email Address */}
           <div>
-            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">
+            <label htmlFor="email" className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">
               Email Address
             </label>
             <input
+              id="email"
               type="email"
               name="email"
+              autoComplete="email"
               placeholder="name@company.com"
               value={formData.email}
               onChange={handleChange}
@@ -162,13 +173,15 @@ function Register() {
 
           {/* Password */}
           <div>
-            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">
+            <label htmlFor="password" className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">
               Password
             </label>
             <div className="relative">
               <input
+                id="password"
                 type={showPassword ? "text" : "password"}
                 name="password"
+                autoComplete="new-password"
                 placeholder="••••••••"
                 value={formData.password}
                 onChange={handleChange}
@@ -181,6 +194,7 @@ function Register() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
+                aria-label={showPassword ? "Hide password" : "Show password"}
                 className="absolute right-3.5 top-3 text-slate-400 hover:text-slate-600 focus:outline-none"
               >
                 {showPassword ? (
@@ -204,13 +218,15 @@ function Register() {
 
           {/* Confirm Password */}
           <div>
-            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">
+            <label htmlFor="confirmPassword" className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">
               Confirm Password
             </label>
             <div className="relative">
               <input
+                id="confirmPassword"
                 type={showConfirmPassword ? "text" : "password"}
                 name="confirmPassword"
+                autoComplete="new-password"
                 placeholder="••••••••"
                 value={formData.confirmPassword}
                 onChange={handleChange}
@@ -223,6 +239,7 @@ function Register() {
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                aria-label={showConfirmPassword ? "Hide password" : "Show password"}
                 className="absolute right-3.5 top-3 text-slate-400 hover:text-slate-600 focus:outline-none"
               >
                 {showConfirmPassword ? (
@@ -244,6 +261,30 @@ function Register() {
             )}
           </div>
 
+          {/* Terms & Conditions Checkbox */}
+          <div className="pt-1">
+            <label className="flex items-start gap-2.5 cursor-pointer">
+              <input
+                type="checkbox"
+                name="agreedToTerms"
+                checked={formData.agreedToTerms}
+                onChange={handleChange}
+                className="mt-0.5 h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+              />
+              <span className="text-xs text-slate-500 font-medium leading-normal">
+                I agree to the{" "}
+                <Link to="/terms" className="text-indigo-600 hover:underline">Terms of Service</Link>
+                {" "}and{" "}
+                <Link to="/privacy" className="text-indigo-600 hover:underline">Privacy Policy</Link>.
+              </span>
+            </label>
+            {errors.agreedToTerms && (
+              <p className="text-rose-600 text-xs font-semibold mt-1.5 flex items-center gap-1">
+                ⚠️ {errors.agreedToTerms}
+              </p>
+            )}
+          </div>
+
           {/* Server Validation Warnings Banner */}
           {serverError && (
             <div className="bg-rose-50 border border-rose-100 text-rose-700 text-xs font-semibold rounded-xl p-3.5 flex items-center gap-2">
@@ -258,7 +299,7 @@ function Register() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-350 text-white font-bold py-3.5 rounded-xl shadow-sm transition duration-150 flex items-center justify-center gap-2 text-sm"
+            className="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold py-3.5 rounded-xl shadow-sm transition duration-150 flex items-center justify-center gap-2 text-sm"
           >
             {loading ? (
               <>

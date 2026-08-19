@@ -1,3 +1,4 @@
+
 import Product from "../models/Product.js";
 
 // ======================
@@ -15,6 +16,7 @@ export const createProduct = async (req, res) => {
       dimensions,
       color,
       customizable,
+      image,
     } = req.body;
 
     const product = await Product.create({
@@ -26,7 +28,7 @@ export const createProduct = async (req, res) => {
       dimensions,
       color,
       customizable,
-      image: req.file ? req.file.path : "",
+      image: image || "",
       createdBy: req.user._id,
     });
 
@@ -35,6 +37,8 @@ export const createProduct = async (req, res) => {
       product,
     });
   } catch (error) {
+    console.error("Create Product Error:", error);
+
     res.status(500).json({
       message: error.message,
     });
@@ -47,13 +51,14 @@ export const createProduct = async (req, res) => {
 
 export const getProducts = async (req, res) => {
   try {
-    const products = await Product.find().populate(
-      "createdBy",
-      "name email"
-    );
+    const products = await Product.find()
+      .populate("createdBy", "name email")
+      .sort({ createdAt: -1 });
 
     res.status(200).json(products);
   } catch (error) {
+    console.error("Get Products Error:", error);
+
     res.status(500).json({
       message: error.message,
     });
@@ -79,6 +84,8 @@ export const getProductById = async (req, res) => {
 
     res.status(200).json(product);
   } catch (error) {
+    console.error("Get Product Error:", error);
+
     res.status(500).json({
       message: error.message,
     });
@@ -91,12 +98,32 @@ export const getProductById = async (req, res) => {
 
 export const updateProduct = async (req, res) => {
   try {
+    const {
+      productName,
+      description,
+      price,
+      materialType,
+      thickness,
+      dimensions,
+      color,
+      customizable,
+      image,
+    } = req.body;
+
     const updateData = {
-      ...req.body,
+      productName,
+      description,
+      price,
+      materialType,
+      thickness,
+      dimensions,
+      color,
+      customizable,
     };
 
-    if (req.file) {
-      updateData.image = req.file.path;
+    // Use the image URL sent from frontend
+    if (image) {
+      updateData.image = image;
     }
 
     const product = await Product.findByIdAndUpdate(
@@ -119,6 +146,8 @@ export const updateProduct = async (req, res) => {
       product,
     });
   } catch (error) {
+    console.error("Update Product Error:", error);
+
     res.status(500).json({
       message: error.message,
     });
@@ -145,6 +174,8 @@ export const deleteProduct = async (req, res) => {
       message: "Product deleted successfully",
     });
   } catch (error) {
+    console.error("Delete Product Error:", error);
+
     res.status(500).json({
       message: error.message,
     });

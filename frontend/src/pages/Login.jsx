@@ -26,10 +26,9 @@ function Login() {
       newErrors.email = "Please enter a valid email address.";
     }
 
+    // Only verify presence on Login, not length/strength rules
     if (!formData.password) {
       newErrors.password = "Password is required";
-    } else if (formData.password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters.";
     }
 
     setErrors(newErrors);
@@ -76,8 +75,8 @@ function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50/50 px-6 py-12 text-slate-800 antialiased font-sans">
-      <div className="bg-white w-full max-w-md p-8 rounded-2xl border border-slate-150 shadow-sm">
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 px-6 py-12 text-slate-800 antialiased font-sans">
+      <div className="bg-white w-full max-w-md p-8 rounded-2xl border border-slate-200 shadow-sm">
         
         {/* Header Block */}
         <div className="text-center mb-8">
@@ -94,12 +93,17 @@ function Login() {
           
           {/* Email Address */}
           <div>
-            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
+            <label 
+              htmlFor="email" 
+              className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2"
+            >
               Email Address
             </label>
             <input
+              id="email"
               type="email"
               name="email"
+              autoComplete="email"
               placeholder="name@company.com"
               value={formData.email}
               onChange={handleChange}
@@ -118,13 +122,26 @@ function Login() {
 
           {/* Password */}
           <div>
-            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
-              Password
-            </label>
+            <div className="flex items-center justify-between mb-2">
+              <label 
+                htmlFor="password" 
+                className="block text-xs font-bold text-slate-500 uppercase tracking-wider"
+              >
+                Password
+              </label>
+              <Link
+                to="/forgot-password"
+                className="text-xs font-semibold text-indigo-600 hover:text-indigo-700 hover:underline"
+              >
+                Forgot password?
+              </Link>
+            </div>
             <div className="relative">
               <input
+                id="password"
                 type={showPassword ? "text" : "password"}
                 name="password"
+                autoComplete="current-password"
                 placeholder="••••••••"
                 value={formData.password}
                 onChange={handleChange}
@@ -137,6 +154,7 @@ function Login() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
+                aria-label={showPassword ? "Hide password" : "Show password"}
                 className="absolute right-3.5 top-3 text-slate-400 hover:text-slate-600 focus:outline-none"
               >
                 {showPassword ? (
@@ -158,7 +176,7 @@ function Login() {
             )}
           </div>
 
-          {/* Server Side Errors Fallback */}
+          {/* Server Errors */}
           {serverError && (
             <div className="bg-rose-50 border border-rose-100 text-rose-700 text-xs font-semibold rounded-xl p-3.5 flex items-center gap-2">
               <svg className="w-4 h-4 shrink-0 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -168,11 +186,11 @@ function Login() {
             </div>
           )}
 
-          {/* Form Submit Trigger CTA */}
+          {/* Submit Button */}
           <button
             type="submit"
             disabled={loading}
-            className="w-full mt-2 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-350 text-white font-bold py-3.5 rounded-xl shadow-sm transition duration-150 flex items-center justify-center gap-2 text-sm"
+            className="w-full mt-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold py-3.5 rounded-xl shadow-sm transition duration-150 flex items-center justify-center gap-2 text-sm"
           >
             {loading ? (
               <>
@@ -189,7 +207,7 @@ function Login() {
 
         </form>
 
-        {/* Secondary Navigation Footer Link */}
+        {/* Footer */}
         <p className="text-center mt-6 text-sm text-slate-500 font-medium">
           Don't have an account?{" "}
           <Link

@@ -1,9 +1,11 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import API from "../../services/api";
 
 function AddProduct() {
   const navigate = useNavigate();
+  const { id } = useParams(); // Extract product ID if in edit mode
+  const isEditMode = Boolean(id);
 
   const [product, setProduct] = useState({
     productName: "",
@@ -21,8 +23,45 @@ function AddProduct() {
     },
   });
 
+  const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
+
+  // Fetch product data if in edit mode
+  useEffect(() => {
+    if (!isEditMode) return;
+
+    const fetchProduct = async () => {
+      try {
+        setLoading(true);
+        const { data } = await API.get(`/products/${id}`);
+        
+        setProduct({
+          productName: data.productName || "",
+          description: data.description || "",
+          price: data.price || "",
+          materialType: data.materialType || "",
+          thickness: data.thickness || "",
+          color: data.color || "",
+          image: data.image || "",
+          customizable: data.customizable || false,
+          dimensions: {
+            length: data.dimensions?.length || "",
+            width: data.dimensions?.width || "",
+            unit: data.dimensions?.unit || "ft",
+          },
+        });
+      } catch (error) {
+        console.error(error);
+        alert(error.response?.data?.message || "Failed to load product details.");
+        navigate("/admin/products");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProduct();
+  }, [id, isEditMode, navigate]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -77,11 +116,9 @@ function AddProduct() {
         },
       });
 
-      console.log(data);
-
       setProduct((prev) => ({
         ...prev,
-        image: data.image, // ← FIXED
+        image: data.image,
       }));
 
       alert("Image uploaded successfully.");
@@ -96,6 +133,7 @@ function AddProduct() {
       setUploading(false);
     }
   };
+
   const submitHandler = async (e) => {
     e.preventDefault();
 
@@ -134,13 +172,21 @@ function AddProduct() {
         return;
       }
 
-      await API.post("/products", product, {
+      const config = {
         headers: {
           Authorization: `Bearer ${userInfo.token}`,
         },
-      });
+      };
 
-      alert("Product added successfully.");
+      if (isEditMode) {
+        // Send PUT request to update product
+        await API.put(`/products/${id}`, product, config);
+        alert("Product updated successfully.");
+      } else {
+        // Send POST request to create product
+        await API.post("/products", product, config);
+        alert("Product added successfully.");
+      }
 
       navigate("/admin/products");
     } catch (error) {
@@ -148,26 +194,35 @@ function AddProduct() {
 
       alert(
         error.response?.data?.message ||
-        "Failed to add product."
+        `Failed to ${isEditMode ? "update" : "add"} product.`
       );
     } finally {
       setSaving(false);
     }
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 py-10">
       <div className="max-w-5xl mx-auto px-6">
 
-        {/* Header */}
+        {/* Dynamic Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-slate-900">
-            Add New Product
+            {isEditMode ? "Edit Product" : "Add New Product"}
           </h1>
 
           <p className="text-slate-500 mt-2">
-            Fill in the product information to add it to your catalog.
+            {isEditMode
+              ? "Update existing product details and save changes."
+              : "Fill in the product information to add it to your catalog."}
           </p>
         </div>
 
@@ -177,15 +232,12 @@ function AddProduct() {
         >
 
           {/* General Information */}
-
           <section>
-
             <h2 className="text-xl font-semibold mb-6 border-b pb-2">
               General Information
             </h2>
 
             <div className="space-y-5">
-
               <div>
                 <label className="block mb-2 font-medium">
                   Product Name
@@ -217,21 +269,16 @@ function AddProduct() {
                   required
                 />
               </div>
-
             </div>
-
           </section>
 
           {/* Product Details */}
-
           <section>
-
             <h2 className="text-xl font-semibold mb-6 border-b pb-2">
               Product Details
             </h2>
 
             <div className="grid md:grid-cols-2 gap-6">
-
               <div>
                 <label className="block mb-2 font-medium">
                   Price (₹)
@@ -290,21 +337,16 @@ function AddProduct() {
                   className="w-full border rounded-xl p-3"
                 />
               </div>
-
             </div>
-
           </section>
 
           {/* Dimensions */}
-
           <section>
-
             <h2 className="text-xl font-semibold mb-6 border-b pb-2">
               Dimensions
             </h2>
 
             <div className="grid grid-cols-3 gap-6">
-
               <div>
                 <label className="block mb-2 font-medium">
                   Length
@@ -352,21 +394,16 @@ function AddProduct() {
                   <option value="mm">mm</option>
                 </select>
               </div>
-
             </div>
-
           </section>
 
-          {/* Image Upload */}
-
+          {/* Image Upload / Replacement */}
           <section>
-
             <h2 className="text-xl font-semibold mb-6 border-b pb-2">
               Product Image
             </h2>
 
             <label className="block border-2 border-dashed border-gray-300 rounded-2xl p-10 cursor-pointer hover:border-indigo-500 transition text-center">
-
               <input
                 type="file"
                 accept="image/*"
@@ -377,61 +414,47 @@ function AddProduct() {
 
               {uploading ? (
                 <div>
-
                   <div className="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
-
                   <p className="mt-4 text-indigo-600 font-semibold">
                     Uploading image...
                   </p>
-
                 </div>
               ) : (
                 <>
-
-                  <div className="text-5xl mb-3">
-                    📷
-                  </div>
-
+                  <div className="text-5xl mb-3">📷</div>
                   <p className="text-lg font-semibold">
-                    Click or Drag & Drop Product Image
+                    {product.image
+                      ? "Click or Drag & Drop to Replace Image"
+                      : "Click or Drag & Drop Product Image"}
                   </p>
-
                   <p className="text-sm text-gray-500 mt-2">
                     PNG, JPG or WEBP (Maximum 5 MB)
                   </p>
-
                 </>
               )}
-
             </label>
+
             {product.image && (
               <div className="mt-8 flex flex-col items-center">
-
                 <img
                   src={product.image}
                   alt="Preview"
                   className="w-72 h-72 object-cover rounded-2xl shadow-lg border"
                 />
-
                 <p className="text-green-600 font-semibold mt-4">
-                  ✓ Image uploaded successfully
+                  ✓ {isEditMode ? "Current / Updated image" : "Image uploaded successfully"}
                 </p>
-
               </div>
             )}
-
           </section>
 
           {/* Customizable */}
-
           <section>
-
             <h2 className="text-xl font-semibold mb-6 border-b pb-2">
               Additional Options
             </h2>
 
             <label className="flex items-center gap-3">
-
               <input
                 type="checkbox"
                 id="customizable"
@@ -444,15 +467,11 @@ function AddProduct() {
               <span className="font-medium">
                 This product can be customized.
               </span>
-
             </label>
-
           </section>
 
-          {/* Buttons */}
-
+          {/* Action Buttons */}
           <div className="flex justify-end gap-4 border-t pt-8">
-
             <button
               type="button"
               onClick={() => navigate("/admin/products")}
@@ -461,16 +480,20 @@ function AddProduct() {
               Cancel
             </button>
 
+            {/* Dynamic Button Label */}
             <button
               type="submit"
               disabled={saving || uploading}
               className="bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300 text-white px-8 py-3 rounded-xl font-semibold transition"
             >
               {saving
-                ? "Adding Product..."
+                ? isEditMode
+                  ? "Updating Product..."
+                  : "Adding Product..."
+                : isEditMode
+                ? "Update Product"
                 : "Add Product"}
             </button>
-
           </div>
 
         </form>
