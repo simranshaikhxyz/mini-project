@@ -13,6 +13,8 @@ import Contact from "./pages/Contact";
 import Profile from "./pages/Profile";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import VerifyOTP from "./pages/VerifyOTP";
+import ForgotPassword from "./pages/ForgotPassword";
 
 import AdminDashboard from "./admin/pages/AdminDashboard";
 import AddProduct from "./admin/pages/AddProduct";
@@ -40,6 +42,8 @@ function App() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/verify-otp" element={<VerifyOTP />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
 
           {/* Admin Back-Office Routes */}
           <Route path="/admin" element={<AdminDashboard />} />

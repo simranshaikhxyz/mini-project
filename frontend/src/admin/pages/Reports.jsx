@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import API from "../../services/api";
 
 function Reports() {
@@ -7,34 +7,57 @@ function Reports() {
     totalOrders: 0,
     totalCustomers: 0,
     totalRevenue: 0,
+    pendingOrders: 0,
+    processingOrders: 0,
+    completedOrders: 0,
+    cancelledOrders: 0,
   });
+
+  const [loading, setLoading] = useState(true);
+
+  const fetchReports = useCallback(async () => {
+    try {
+      setLoading(true);
+      const { data } = await API.get("/dashboard");
+
+      setStats({
+        totalProducts: data?.totalProducts || 0,
+        totalOrders: data?.totalOrders || 0,
+        totalCustomers: data?.totalCustomers || 0,
+        totalRevenue: data?.totalRevenue || 0,
+        pendingOrders: data?.pendingOrders || 0,
+        processingOrders: data?.processingOrders || 0,
+        completedOrders: data?.completedOrders || 0,
+        cancelledOrders: data?.cancelledOrders || 0,
+      });
+    } catch (error) {
+      console.error("Failed to fetch dashboard reports:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     fetchReports();
-  }, []);
+  }, [fetchReports]);
 
-  const fetchReports = async () => {
-    try {
-      const userInfo = JSON.parse(
-        localStorage.getItem("userInfo")
-      );
-
-      const { data } = await API.get("/dashboard", {
-        headers: {
-          Authorization: `Bearer ${userInfo.token}`,
-        },
-      });
-
-      setStats(data);
-    } catch (error) {
-      console.log(error);
-    }
+  // Helper function for dynamic order status bar percentages
+  const getPercentage = (count) => {
+    if (!stats.totalOrders || stats.totalOrders === 0) return 0;
+    return Math.min(Math.round((count / stats.totalOrders) * 100), 100);
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50/50 text-slate-800 antialiased font-sans py-10">
       <div className="max-w-7xl mx-auto px-6">
-        
         {/* Header */}
         <div className="mb-10">
           <h1 className="text-3xl font-bold tracking-tight text-slate-900">
@@ -47,7 +70,6 @@ function Reports() {
 
         {/* Top Metric Cards Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-
           {/* Card: Total Products */}
           <div className="bg-white border border-slate-100 shadow-sm rounded-2xl p-6 flex items-center justify-between">
             <div>
@@ -115,12 +137,10 @@ function Reports() {
               </svg>
             </div>
           </div>
-
         </div>
 
         {/* Detailed Breakdown Grid */}
         <div className="grid md:grid-cols-2 gap-6 mt-8">
-
           {/* Section: Order Status Metrics */}
           <div className="bg-white border border-slate-100 rounded-2xl shadow-sm p-6">
             <h2 className="text-lg font-bold text-slate-900 mb-6">
@@ -135,10 +155,15 @@ function Reports() {
                     <span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
                     Pending Validation
                   </span>
-                  <span className="text-slate-900 font-semibold tabular-nums">0</span>
+                  <span className="text-slate-900 font-semibold tabular-nums">
+                    {stats.pendingOrders}
+                  </span>
                 </div>
                 <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                  <div className="bg-amber-500 h-full w-[0%]"></div>
+                  <div
+                    className="bg-amber-500 h-full transition-all duration-500"
+                    style={{ width: `${getPercentage(stats.pendingOrders)}%` }}
+                  ></div>
                 </div>
               </div>
 
@@ -149,10 +174,15 @@ function Reports() {
                     <span className="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
                     In Production / Processing
                   </span>
-                  <span className="text-slate-900 font-semibold tabular-nums">0</span>
+                  <span className="text-slate-900 font-semibold tabular-nums">
+                    {stats.processingOrders}
+                  </span>
                 </div>
                 <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                  <div className="bg-blue-500 h-full w-[0%]"></div>
+                  <div
+                    className="bg-blue-500 h-full transition-all duration-500"
+                    style={{ width: `${getPercentage(stats.processingOrders)}%` }}
+                  ></div>
                 </div>
               </div>
 
@@ -163,10 +193,15 @@ function Reports() {
                     <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
                     Dispatched & Completed
                   </span>
-                  <span className="text-slate-900 font-semibold tabular-nums">0</span>
+                  <span className="text-slate-900 font-semibold tabular-nums">
+                    {stats.completedOrders}
+                  </span>
                 </div>
                 <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                  <div className="bg-emerald-500 h-full w-[0%]"></div>
+                  <div
+                    className="bg-emerald-500 h-full transition-all duration-500"
+                    style={{ width: `${getPercentage(stats.completedOrders)}%` }}
+                  ></div>
                 </div>
               </div>
 
@@ -177,10 +212,15 @@ function Reports() {
                     <span className="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
                     Cancelled Transactions
                   </span>
-                  <span className="text-slate-900 font-semibold tabular-nums">0</span>
+                  <span className="text-slate-900 font-semibold tabular-nums">
+                    {stats.cancelledOrders}
+                  </span>
                 </div>
                 <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                  <div className="bg-rose-500 h-full w-[0%]"></div>
+                  <div
+                    className="bg-rose-500 h-full transition-all duration-500"
+                    style={{ width: `${getPercentage(stats.cancelledOrders)}%` }}
+                  ></div>
                 </div>
               </div>
             </div>
@@ -245,9 +285,7 @@ function Reports() {
               </button>
             </div>
           </div>
-
         </div>
-
       </div>
     </div>
   );

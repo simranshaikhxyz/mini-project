@@ -14,46 +14,31 @@ function ManageOrders() {
 
   const fetchOrders = async () => {
     try {
-      const userInfo = JSON.parse(
-        localStorage.getItem("userInfo")
-      );
-
-      const { data } = await API.get("/orders", {
-        headers: {
-          Authorization: `Bearer ${userInfo.token}`,
-        },
-      });
-
-      setOrders(data);
+      const { data } = await API.get("/orders");
+      setOrders(data || []);
     } catch (error) {
-      console.log(error);
-      alert("Failed to load orders");
+      console.error("Fetch Orders Error:", error);
+      alert(error.response?.data?.message || "Failed to load orders");
     } finally {
       setLoading(false);
     }
   };
 
   const updateStatus = async (id, status) => {
+    // Optimistic state update for instant UI feedback
+    setOrders((prevOrders) =>
+      prevOrders.map((order) =>
+        order._id === id ? { ...order, orderStatus: status } : order
+      )
+    );
+
     try {
-      const userInfo = JSON.parse(
-        localStorage.getItem("userInfo")
-      );
-
-      await API.put(
-        `/orders/${id}`,
-        { orderStatus: status },
-        {
-          headers: {
-            Authorization: `Bearer ${userInfo.token}`,
-          },
-        }
-      );
-
-      fetchOrders();
-
+      await API.put(`/orders/${id}`, { orderStatus: status });
     } catch (error) {
-      console.log(error);
-      alert("Failed to update status");
+      console.error("Update Status Error:", error);
+      alert(error.response?.data?.message || "Failed to update status");
+      // Revert changes on error
+      fetchOrders();
     }
   };
 
@@ -134,12 +119,12 @@ function ManageOrders() {
                     >
                       {/* Customer Name */}
                       <td className="p-5 font-semibold text-slate-900">
-                        {order.customerName}
+                        {order.customerName || order.user?.name || "Guest Customer"}
                       </td>
 
                       {/* Phone */}
                       <td className="p-5 text-slate-500 font-medium tabular-nums">
-                        {order.phone}
+                        {order.phone || "—"}
                       </td>
 
                       {/* Product Name */}
@@ -153,18 +138,18 @@ function ManageOrders() {
 
                       {/* Quantity */}
                       <td className="p-5 text-slate-500 font-medium tabular-nums">
-                        {order.quantity}
+                        {order.quantity || 1}
                       </td>
 
                       {/* Total Price */}
                       <td className="p-5 font-bold text-slate-900 tabular-nums">
-                        ₹{order.totalPrice.toLocaleString("en-IN")}
+                        ₹{(order.totalPrice || 0).toLocaleString("en-IN")}
                       </td>
 
                       {/* Dynamic Dropdown Status Selector */}
                       <td className="p-5">
                         <select
-                          value={order.orderStatus}
+                          value={order.orderStatus || "Pending"}
                           onChange={(e) => updateStatus(order._id, e.target.value)}
                           className={`text-xs font-bold px-3 py-1.5 rounded-full border bg-white focus:outline-none focus:ring-2 cursor-pointer transition-all duration-150 ${getStatusClasses(
                             order.orderStatus
@@ -197,7 +182,7 @@ function ManageOrders() {
 
         {/* Modal Sheet Backdrop */}
         {showModal && selectedOrder && (
-          <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex justify-center items-center z-50 p-4 transition-all animate-fadeIn">
+          <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex justify-center items-center z-50 p-4 transition-all">
             
             {/* Modal Body Container */}
             <div className="bg-white rounded-2xl border border-slate-100 shadow-xl w-full max-w-lg overflow-hidden max-h-[90vh] flex flex-col">
@@ -231,13 +216,13 @@ function ManageOrders() {
                     Customer Info
                   </h3>
                   <div className="bg-slate-50/50 rounded-xl p-4 border border-slate-100 space-y-2.5">
-                    <div className="flex justify-between"><span className="text-slate-500">Name</span><span className="font-semibold text-slate-800">{selectedOrder.customerName}</span></div>
-                    <div className="flex justify-between"><span className="text-slate-500">Phone</span><span className="font-semibold text-slate-800 tabular-nums">{selectedOrder.phone}</span></div>
-                    <div className="flex flex-col gap-1 pt-1 border-t border-slate-200/60"><span className="text-slate-500">Shipping Address</span><span className="font-medium text-slate-700">{selectedOrder.address}</span></div>
+                    <div className="flex justify-between"><span className="text-slate-500">Name</span><span className="font-semibold text-slate-800">{selectedOrder.customerName || selectedOrder.user?.name || "Guest Customer"}</span></div>
+                    <div className="flex justify-between"><span className="text-slate-500">Phone</span><span className="font-semibold text-slate-800 tabular-nums">{selectedOrder.phone || "—"}</span></div>
+                    <div className="flex flex-col gap-1 pt-1 border-t border-slate-200/60"><span className="text-slate-500">Shipping Address</span><span className="font-medium text-slate-700">{selectedOrder.address || "—"}</span></div>
                   </div>
                 </div>
 
-                {/* Section 2: Specifications Product Details */}
+                {/* Section 2: Product Details */}
                 <div>
                   <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-3">
                     Product Details
@@ -250,22 +235,22 @@ function ManageOrders() {
                   </div>
                 </div>
 
-                {/* Section 3: Summary Invoicing metadata */}
+                {/* Section 3: Order Configuration */}
                 <div>
                   <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-3">
                     Order Configuration
                   </h3>
                   <div className="bg-slate-50/50 rounded-xl p-4 border border-slate-100 space-y-2.5">
-                    <div className="flex justify-between"><span className="text-slate-500">Quantity</span><span className="font-semibold text-slate-800 tabular-nums">× {selectedOrder.quantity}</span></div>
-                    <div className="flex justify-between items-center"><span className="text-slate-500">Processing Status</span><span className={`px-2.5 py-0.5 rounded-full text-xs font-bold border ${getStatusClasses(selectedOrder.orderStatus)}`}>{selectedOrder.orderStatus}</span></div>
-                    <div className="flex justify-between"><span className="text-slate-500">Ordered On</span><span className="font-medium text-slate-700 tabular-nums">{new Date(selectedOrder.createdAt).toLocaleDateString()}</span></div>
-                    <div className="flex justify-between items-center pt-2.5 border-t border-slate-200/60"><span className="text-base font-bold text-slate-900">Total Charged</span><span className="text-lg font-black text-indigo-600 tabular-nums">₹{selectedOrder.totalPrice.toLocaleString("en-IN")}</span></div>
+                    <div className="flex justify-between"><span className="text-slate-500">Quantity</span><span className="font-semibold text-slate-800 tabular-nums">× {selectedOrder.quantity || 1}</span></div>
+                    <div className="flex justify-between items-center"><span className="text-slate-500">Processing Status</span><span className={`px-2.5 py-0.5 rounded-full text-xs font-bold border ${getStatusClasses(selectedOrder.orderStatus)}`}>{selectedOrder.orderStatus || "Pending"}</span></div>
+                    <div className="flex justify-between"><span className="text-slate-500">Ordered On</span><span className="font-medium text-slate-700 tabular-nums">{selectedOrder.createdAt ? new Date(selectedOrder.createdAt).toLocaleDateString() : "N/A"}</span></div>
+                    <div className="flex justify-between items-center pt-2.5 border-t border-slate-200/60"><span className="text-base font-bold text-slate-900">Total Charged</span><span className="text-lg font-black text-indigo-600 tabular-nums">₹{(selectedOrder.totalPrice || 0).toLocaleString("en-IN")}</span></div>
                   </div>
                 </div>
 
               </div>
 
-              {/* Modal Footer Controls */}
+              {/* Modal Footer */}
               <div className="p-4 border-t border-slate-100 bg-slate-50/50 flex justify-end">
                 <button
                   type="button"

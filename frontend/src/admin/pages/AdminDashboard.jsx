@@ -19,26 +19,17 @@ function AdminDashboard() {
 
   const fetchDashboardData = async () => {
     try {
-      const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+      // ⚡ Fetch both endpoints concurrently for better performance
+      const [dashboardRes, ordersRes] = await Promise.all([
+        API.get("/dashboard"),
+        API.get("/orders"),
+      ]);
 
-      const dashboardResponse = await API.get("/dashboard", {
-        headers: {
-          Authorization: `Bearer ${userInfo.token}`,
-        },
-      });
-
-      setStats(dashboardResponse.data);
-
-      const ordersResponse = await API.get("/orders", {
-        headers: {
-          Authorization: `Bearer ${userInfo.token}`,
-        },
-      });
-
-      setRecentOrders(ordersResponse.data.slice(0, 5));
+      setStats(dashboardRes.data);
+      setRecentOrders(ordersRes.data?.slice(0, 5) || []);
     } catch (error) {
-      console.log(error);
-      alert("Failed to load dashboard data.");
+      console.error("Dashboard Fetch Error:", error);
+      alert(error.response?.data?.message || "Failed to load dashboard data.");
     } finally {
       setLoading(false);
     }
@@ -84,7 +75,7 @@ function AdminDashboard() {
               </div>
             </div>
             <h2 className="text-3xl font-bold text-slate-900 mt-4 tracking-tight">
-              {stats.totalProducts}
+              {stats?.totalProducts || 0}
             </h2>
           </div>
 
@@ -99,7 +90,7 @@ function AdminDashboard() {
               </div>
             </div>
             <h2 className="text-3xl font-bold text-slate-900 mt-4 tracking-tight">
-              {stats.totalOrders}
+              {stats?.totalOrders || 0}
             </h2>
           </div>
 
@@ -114,7 +105,7 @@ function AdminDashboard() {
               </div>
             </div>
             <h2 className="text-3xl font-bold text-slate-900 mt-4 tracking-tight">
-              {stats.totalCustomers}
+              {stats?.totalCustomers || 0}
             </h2>
           </div>
 
@@ -129,7 +120,7 @@ function AdminDashboard() {
               </div>
             </div>
             <h2 className="text-3xl font-bold text-slate-900 mt-4 tracking-tight">
-              ₹{stats.totalRevenue.toLocaleString("en-IN")}
+              ₹{(stats?.totalRevenue || 0).toLocaleString("en-IN")}
             </h2>
           </div>
         </div>
@@ -249,7 +240,7 @@ function AdminDashboard() {
                           className="hover:bg-slate-50/50 transition-colors"
                         >
                           <td className="py-4 font-medium text-slate-700">
-                            {order.customerName}
+                            {order.customerName || order.user?.name || "Guest Customer"}
                           </td>
                           <td className="py-4 text-slate-500">
                             {order.product?.productName || "Product Deleted"}
@@ -266,11 +257,11 @@ function AdminDashboard() {
                                   : "bg-amber-50 text-amber-700"
                               }`}
                             >
-                              {order.orderStatus}
+                              {order.orderStatus || "Pending"}
                             </span>
                           </td>
                           <td className="py-4 text-right font-semibold text-slate-900">
-                            ₹{order.totalPrice.toLocaleString("en-IN")}
+                            ₹{(order.totalPrice || 0).toLocaleString("en-IN")}
                           </td>
                         </tr>
                       ))
@@ -293,25 +284,25 @@ function AdminDashboard() {
                 <div className="flex justify-between items-center py-1.5 border-b border-slate-50">
                   <span className="text-slate-500">Total Products</span>
                   <span className="font-semibold text-slate-800">
-                    {stats.totalProducts}
+                    {stats?.totalProducts || 0}
                   </span>
                 </div>
                 <div className="flex justify-between items-center py-1.5 border-b border-slate-50">
                   <span className="text-slate-500">Total Orders</span>
                   <span className="font-semibold text-slate-800">
-                    {stats.totalOrders}
+                    {stats?.totalOrders || 0}
                   </span>
                 </div>
                 <div className="flex justify-between items-center py-1.5 border-b border-slate-50">
                   <span className="text-slate-500">Customers</span>
                   <span className="font-semibold text-slate-800">
-                    {stats.totalCustomers}
+                    {stats?.totalCustomers || 0}
                   </span>
                 </div>
                 <div className="flex justify-between items-center pt-1.5">
                   <span className="text-slate-500">Revenue</span>
                   <span className="font-bold text-emerald-600">
-                    ₹{stats.totalRevenue.toLocaleString("en-IN")}
+                    ₹{(stats?.totalRevenue || 0).toLocaleString("en-IN")}
                   </span>
                 </div>
               </div>
@@ -325,19 +316,19 @@ function AdminDashboard() {
               <ul className="space-y-4 text-sm text-slate-600">
                 <li className="flex items-center gap-3">
                   <div className="w-1.5 h-1.5 bg-amber-500 rounded-full"></div>
-                  <span>Products in Store: <strong>{stats.totalProducts}</strong></span>
+                  <span>Products in Store: <strong>{stats?.totalProducts || 0}</strong></span>
                 </li>
                 <li className="flex items-center gap-3">
                   <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
-                  <span>Orders Received: <strong>{stats.totalOrders}</strong></span>
+                  <span>Orders Received: <strong>{stats?.totalOrders || 0}</strong></span>
                 </li>
                 <li className="flex items-center gap-3">
                   <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></div>
-                  <span>Registered Customers: <strong>{stats.totalCustomers}</strong></span>
+                  <span>Registered Customers: <strong>{stats?.totalCustomers || 0}</strong></span>
                 </li>
                 <li className="flex items-center gap-3">
                   <div className="w-1.5 h-1.5 bg-rose-500 rounded-full"></div>
-                  <span>Total Revenue: <strong>₹{stats.totalRevenue.toLocaleString("en-IN")}</strong></span>
+                  <span>Total Revenue: <strong>₹{(stats?.totalRevenue || 0).toLocaleString("en-IN")}</strong></span>
                 </li>
               </ul>
             </div>

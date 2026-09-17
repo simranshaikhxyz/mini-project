@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import API from "../services/api";
 
@@ -18,19 +18,19 @@ function OrderPage() {
 
   const [errors, setErrors] = useState({});
 
-  useEffect(() => {
-    fetchProduct();
-  }, [id]);
-
-  const fetchProduct = async () => {
+  const fetchProduct = useCallback(async () => {
     try {
       const { data } = await API.get(`/products/${id}`);
       setProduct(data);
     } catch (error) {
-      console.log(error);
-      alert("Failed to load product");
+      console.error("Failed to load product:", error);
+      alert("Failed to load product details.");
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    fetchProduct();
+  }, [fetchProduct]);
 
   const validate = () => {
     let newErrors = {};
@@ -85,9 +85,7 @@ function OrderPage() {
     try {
       setLoading(true);
 
-      const userInfo = JSON.parse(
-        localStorage.getItem("userInfo")
-      );
+      const userInfo = JSON.parse(localStorage.getItem("userInfo"));
 
       if (!userInfo) {
         alert("Please login first.");
@@ -95,27 +93,20 @@ function OrderPage() {
         return;
       }
 
-      await API.post(
-        "/orders",
-        {
-          customerName: formData.customerName.trim(),
-          phone: formData.phone.trim(),
-          address: formData.address.trim(),
-          quantity: Number(formData.quantity),
-          product: product._id,
-          totalPrice: product.price * Number(formData.quantity),
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${userInfo.token}`,
-          },
-        }
-      );
+      // Authorization header is automatically attached by API interceptor in api.js
+      await API.post("/orders", {
+        customerName: formData.customerName.trim(),
+        phone: formData.phone.trim(),
+        address: formData.address.trim(),
+        quantity: Number(formData.quantity),
+        product: product._id,
+        totalPrice: product.price * Number(formData.quantity),
+      });
 
       alert("Order placed successfully!");
       navigate("/myorders");
     } catch (error) {
-      console.log(error);
+      console.error("Order placement error:", error);
 
       if (error.response?.status === 401) {
         alert("Session expired. Please login again.");
@@ -193,7 +184,7 @@ function OrderPage() {
             <div className="bg-slate-50 border border-slate-100/80 rounded-xl p-4 space-y-3 text-sm">
               <div className="flex justify-between text-slate-500">
                 <span>Unit Price</span>
-                <span className="font-semibold text-slate-850">₹{product.price.toLocaleString("en-IN")}</span>
+                <span className="font-semibold text-slate-850">₹{product.price?.toLocaleString("en-IN")}</span>
               </div>
               <div className="flex justify-between text-slate-500">
                 <span>Quantity Requested</span>

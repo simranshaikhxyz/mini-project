@@ -24,17 +24,23 @@ router.get("/:id", getProductById);
 // Admin Routes
 // =======================
 
-// Add Product with Image Upload
+// Add Product with Multiple Image Upload (allows up to 5 images)
 router.post(
   "/",
   protect,
   admin,
-  upload.single("image"),
+  upload.array("images", 5),
   createProduct
 );
 
-// Update Product
-router.put("/:id", protect, admin, updateProduct);
+// Update Product (also supporting multiple images if updated here)
+router.put(
+  "/:id",
+  protect,
+  admin,
+  upload.array("images", 5),
+  updateProduct
+);
 
 // Delete Product
 router.delete("/:id", protect, admin, deleteProduct);

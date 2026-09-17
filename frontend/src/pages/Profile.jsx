@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
@@ -9,6 +9,13 @@ function Profile() {
   const [name, setName] = useState(userInfo?.name || "");
   const [email, setEmail] = useState(userInfo?.email || "");
   const [saveSuccess, setSaveSuccess] = useState(false);
+
+  useEffect(() => {
+    if (userInfo) {
+      setName(userInfo.name || "");
+      setEmail(userInfo.email || "");
+    }
+  }, [userInfo]);
 
   const handleSave = () => {
     const updatedUser = {

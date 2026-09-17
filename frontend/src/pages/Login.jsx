@@ -26,7 +26,6 @@ function Login() {
       newErrors.email = "Please enter a valid email address.";
     }
 
-    // Only verify presence on Login, not length/strength rules
     if (!formData.password) {
       newErrors.password = "Password is required";
     }
@@ -66,9 +65,15 @@ function Login() {
         navigate("/");
       }
     } catch (error) {
-      setServerError(
-        error.response?.data?.message || "Invalid email or password."
-      );
+      const errorMsg = error.response?.data?.message || "Invalid email or password.";
+      
+      // If user is not verified, redirect to OTP verification step
+      if (error.response?.data?.isVerified === false) {
+        navigate("/verify-otp", { state: { email: formData.email } });
+        return;
+      }
+
+      setServerError(errorMsg);
     } finally {
       setLoading(false);
     }

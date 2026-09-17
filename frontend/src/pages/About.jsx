@@ -1,203 +1,729 @@
+import { Link } from "react-router-dom";
+
 function About() {
   return (
-    <div className="bg-slate-50/50 min-h-screen text-slate-800 antialiased font-sans">
-      
-      {/* Hero Header Banner */}
-      <div className="bg-slate-950 text-white py-20 px-6 border-b border-slate-900">
-        <div className="max-w-6xl mx-auto text-center">
-          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-white">
-            About <span className="text-indigo-500">YASSH ENTERPRISES</span>
-          </h1>
-          <p className="mt-5 text-base md:text-lg text-slate-400 max-w-3xl mx-auto leading-relaxed font-medium">
-            Carrying forward generations of craftsmanship with modern quality standards in metal fabrication and high-precision sheet metal solutions.
-          </p>
-        </div>
-      </div>
+    <div className="bg-slate-50 text-slate-900 antialiased font-sans min-h-screen overflow-x-hidden">
 
-      {/* Credibility Metrics Section */}
-      <div className="bg-white border-b border-slate-200/80 py-10 px-6">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            <div>
-              <div className="text-3xl md:text-4xl font-extrabold text-indigo-600">20+</div>
-              <div className="text-xs md:text-sm font-semibold text-slate-500 uppercase tracking-wider mt-2">Years of Legacy</div>
+      {/* =========================================================
+          ABOUT HERO
+      ========================================================= */}
+
+      <section className="relative overflow-hidden bg-slate-950">
+
+        {/* Background Image */}
+
+        <img
+          src="https://res.cloudinary.com/cnxvqb67/image/upload/v1789466619/WhatsApp_Image_2026-09-15_at_1.32.54_PM.jpg"
+          alt="Yassh Enterprises metal fabrication"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+
+        {/* Overlay */}
+
+        <div className="absolute inset-0 bg-slate-950/80" />
+
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-slate-950/70 to-slate-950/30" />
+
+        {/* Grid */}
+
+        <div
+          className="absolute inset-0 opacity-[0.05]"
+          style={{
+            backgroundImage:
+              "linear-gradient(to right, #ffffff 1px, transparent 1px), linear-gradient(to bottom, #ffffff 1px, transparent 1px)",
+            backgroundSize: "40px 40px",
+          }}
+        />
+
+        {/* Content */}
+
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-20 sm:py-24 lg:py-28">
+
+          <div className="max-w-4xl">
+
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-indigo-400/30 bg-indigo-500/10">
+
+              <span className="w-2 h-2 bg-indigo-400 rounded-full" />
+
+              <span className="text-indigo-300 text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.2em]">
+                About Yassh Enterprises
+              </span>
+
             </div>
-            <div>
-              <div className="text-3xl md:text-4xl font-extrabold text-indigo-600">5,000+</div>
-              <div className="text-xs md:text-sm font-semibold text-slate-500 uppercase tracking-wider mt-2">Completed Projects</div>
-            </div>
-            <div>
-              <div className="text-3xl md:text-4xl font-extrabold text-indigo-600">99%</div>
-              <div className="text-xs md:text-sm font-semibold text-slate-500 uppercase tracking-wider mt-2">On-Time Delivery</div>
-            </div>
-            <div>
-              <div className="text-3xl md:text-4xl font-extrabold text-indigo-600">Mumbai</div>
-              <div className="text-xs md:text-sm font-semibold text-slate-500 uppercase tracking-wider mt-2">Regional Presence</div>
-            </div>
+
+
+            <h1 className="text-white text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black uppercase leading-[0.95] tracking-tight mt-6">
+
+              26 Years of
+
+              <br />
+
+              <span className="text-indigo-400">
+                Metal Craftsmanship
+              </span>
+
+            </h1>
+
+
+            <p className="text-slate-300 text-sm sm:text-base md:text-lg leading-7 max-w-2xl mt-6">
+
+              A family-led journey built around metal fabrication,
+              practical solutions and long-term experience.
+
+            </p>
+
           </div>
-        </div>
-      </div>
 
-      {/* Legacy Heritage Block */}
-      <div className="max-w-6xl mx-auto px-6 py-20">
-        <div className="grid md:grid-cols-2 gap-12 items-center">
-          <div className="overflow-hidden rounded-2xl border border-slate-200/60 shadow-sm bg-slate-100 aspect-[4/3]">
-            <img
-              src="/images/family-history.jpg"
-              alt="Yassh Enterprises Manufacturing Heritage"
-              className="w-full h-full object-cover transition duration-300 hover:scale-[1.01]"
-            />
+        </div>
+
+
+        {/* Bottom Stats */}
+
+        <div className="relative z-20 border-t border-white/10 bg-slate-950/95 backdrop-blur-md">
+
+          <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4">
+
+            <div className="px-4 sm:px-6 py-5 border-r border-white/10">
+
+              <p className="text-indigo-400 text-xl sm:text-2xl font-black">
+                26+
+              </p>
+
+              <p className="text-slate-400 text-[8px] sm:text-[9px] uppercase tracking-[0.2em] mt-1">
+                Years Legacy
+              </p>
+
+            </div>
+
+
+            <div className="px-4 sm:px-6 py-5 border-r md:border-r border-white/10">
+
+              <p className="text-indigo-400 text-xl sm:text-2xl font-black">
+                CUSTOM
+              </p>
+
+              <p className="text-slate-400 text-[8px] sm:text-[9px] uppercase tracking-[0.2em] mt-1">
+                Fabrication
+              </p>
+
+            </div>
+
+
+            <div className="px-4 sm:px-6 py-5 border-r border-white/10">
+
+              <p className="text-indigo-400 text-xl sm:text-2xl font-black">
+                SMALL
+              </p>
+
+              <p className="text-slate-400 text-[8px] sm:text-[9px] uppercase tracking-[0.2em] mt-1">
+                To Bulk Orders
+              </p>
+
+            </div>
+
+
+            <div className="px-4 sm:px-6 py-5">
+
+              <p className="text-indigo-400 text-xl sm:text-2xl font-black">
+                PUNE
+              </p>
+
+              <p className="text-slate-400 text-[8px] sm:text-[9px] uppercase tracking-[0.2em] mt-1">
+                Industrial Hub
+              </p>
+
+            </div>
+
           </div>
 
-          <div>
-            <h2 className="text-3xl font-extrabold tracking-tight mb-6 text-slate-900">
-              Our Story & Beliefs
+        </div>
+
+      </section>
+
+
+      {/* =========================================================
+          OUR STORY
+      ========================================================= */}
+
+      <section className="bg-white py-16 sm:py-20 lg:py-24">
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14 items-center">
+
+            {/* Image */}
+
+            <div className="relative order-2 lg:order-1">
+
+              <div className="absolute -top-3 -left-3 sm:-top-4 sm:-left-4 w-16 h-16 sm:w-20 sm:h-20 border-l-4 border-t-4 border-indigo-500 rounded-tl-xl" />
+
+              <div className="rounded-2xl overflow-hidden shadow-2xl">
+
+                <img
+                  src="https://res.cloudinary.com/cnxvqb67/image/upload/v1789466619/WhatsApp_Image_2026-09-15_at_1.32.54_PM.jpg"
+                  alt="Yassh Enterprises"
+                  className="w-full h-[300px] sm:h-[380px] lg:h-[460px] object-cover"
+                />
+
+              </div>
+
+
+              {/* Experience Badge */}
+
+              <div className="absolute -bottom-5 right-4 sm:right-6 bg-slate-950 text-white rounded-xl px-5 sm:px-7 py-4 shadow-xl">
+
+                <p className="text-indigo-400 text-2xl sm:text-3xl font-black">
+                  26+
+                </p>
+
+                <p className="text-slate-400 text-[8px] sm:text-[9px] uppercase tracking-[0.2em]">
+                  Years Experience
+                </p>
+
+              </div>
+
+            </div>
+
+
+            {/* Story */}
+
+            <div className="order-1 lg:order-2">
+
+              <span className="text-indigo-600 text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.25em]">
+                Our Story
+              </span>
+
+
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black leading-tight mt-4">
+
+                Built on
+
+                <span className="text-indigo-600">
+                  {" "}Experience
+                </span>
+
+                <br />
+
+                & Trust
+
+              </h2>
+
+
+              <div className="w-16 h-1 bg-indigo-600 rounded-full my-6" />
+
+
+              <p className="text-slate-600 text-sm md:text-base leading-7">
+                Yassh Enterprises represents a family legacy in metal
+                craftsmanship developed over 26 years of experience.
+                Our work is focused on creating practical metal
+                solutions for different requirements.
+              </p>
+
+
+              <p className="text-slate-600 text-sm md:text-base leading-7 mt-4">
+                From custom metal boxes and storage solutions to
+                sheet-metal fabrication and industrial requirements,
+                we focus on understanding what the customer needs
+                before developing the solution.
+              </p>
+
+
+              <p className="text-slate-600 text-sm md:text-base leading-7 mt-4">
+                Our approach combines hands-on fabrication experience
+                with a simple and practical way of working with
+                customers.
+              </p>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      {/* =========================================================
+          WHAT WE DO
+      ========================================================= */}
+
+      <section className="bg-slate-100 py-16 sm:py-20 lg:py-24">
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">
+
+          <div className="max-w-3xl mx-auto text-center mb-10 sm:mb-12">
+
+            <span className="text-indigo-600 text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.25em]">
+              What We Do
+            </span>
+
+
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black mt-4 leading-tight">
+
+              Practical Metal
+
+              <span className="text-indigo-600">
+                {" "}Solutions
+              </span>
+
             </h2>
-            <div className="space-y-4 text-slate-600 text-sm md:text-base leading-relaxed font-medium">
-              <p>
-                Our journey began with a single manual press brake and a simple belief: that premium, custom metalwork shouldn't come with compromised deadlines or cutting corners.
-              </p>
-              <p>
-                From hand-crafted structural frames built with traditional instrumentation to modern automated fabrication matrices, we have fiercely preserved that same foundational attention to millimeter detail.
-              </p>
-              <p>
-                Today, YASSH ENTERPRISES proudly synthesizes deep veteran experience with sophisticated assembly protocols to supply resilient metal products across Mumbai and regional commercial markets.
-              </p>
-            </div>
+
+
+            <p className="text-slate-500 text-sm md:text-base leading-7 mt-5 max-w-2xl mx-auto">
+              Our work covers a range of metal fabrication requirements,
+              from individual custom products to larger business orders.
+            </p>
+
           </div>
-        </div>
-      </div>
 
-      {/* The Fabrication Process */}
-      <div className="bg-slate-900 text-white py-20 px-6">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-extrabold tracking-tight text-center mb-4">
-            How We Work
-          </h2>
-          <p className="text-slate-400 text-center max-w-2xl mx-auto mb-16 text-sm md:text-base font-medium">
-            From blue-print analysis to delivery, we maintain a highly systematic production pipeline to guarantee quality.
-          </p>
 
-          <div className="grid md:grid-cols-3 gap-8 relative">
-            {/* Step 1 */}
-            <div className="bg-slate-800/50 p-8 rounded-2xl border border-slate-700/50 relative">
-              <div className="absolute -top-5 left-8 bg-indigo-600 text-white font-extrabold rounded-lg px-4 py-1 text-sm shadow">
+          {/* Services */}
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+
+            {/* Card 1 */}
+
+            <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-7 hover:-translate-y-2 hover:shadow-xl hover:border-indigo-200 transition-all duration-300">
+
+              <div className="w-11 h-11 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-black">
                 01
               </div>
-              <h3 className="text-xl font-bold text-white mb-3 mt-2">Design & Blueprinting</h3>
-              <p className="text-slate-450 text-sm leading-relaxed">
-                We analyze your custom specifications or CAD drawings to determine the absolute best metal gauge and alloy (GI, MS, Stainless Steel, or Aluminum) for the job.
+
+
+              <h3 className="text-lg font-bold mt-6">
+                Custom Metal Boxes
+              </h3>
+
+
+              <p className="text-slate-500 text-sm leading-6 mt-3">
+                Metal storage boxes and enclosures made according
+                to required dimensions and applications.
               </p>
+
             </div>
 
-            {/* Step 2 */}
-            <div className="bg-slate-800/50 p-8 rounded-2xl border border-slate-700/50 relative">
-              <div className="absolute -top-5 left-8 bg-indigo-600 text-white font-extrabold rounded-lg px-4 py-1 text-sm shadow">
+
+            {/* Card 2 */}
+
+            <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-7 hover:-translate-y-2 hover:shadow-xl hover:border-indigo-200 transition-all duration-300">
+
+              <div className="w-11 h-11 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-black">
                 02
               </div>
-              <h3 className="text-xl font-bold text-white mb-3 mt-2">Precision Fabrication</h3>
-              <p className="text-slate-450 text-sm leading-relaxed">
-                Using calibrated cutting, bending, and punching machinery, we shape the raw metal sheets to stay strictly true to the planned dimensions.
+
+
+              <h3 className="text-lg font-bold mt-6">
+                Sheet-Metal Fabrication
+              </h3>
+
+
+              <p className="text-slate-500 text-sm leading-6 mt-3">
+                Fabrication work based on required material,
+                dimensions and practical usage.
               </p>
+
             </div>
 
-            {/* Step 3 */}
-            <div className="bg-slate-800/50 p-8 rounded-2xl border border-slate-700/50 relative">
-              <div className="absolute -top-5 left-8 bg-indigo-600 text-white font-extrabold rounded-lg px-4 py-1 text-sm shadow">
+
+            {/* Card 3 */}
+
+            <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-7 hover:-translate-y-2 hover:shadow-xl hover:border-indigo-200 transition-all duration-300">
+
+              <div className="w-11 h-11 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-black">
                 03
               </div>
-              <h3 className="text-xl font-bold text-white mb-3 mt-2">Rigorous QC & Delivery</h3>
-              <p className="text-slate-450 text-sm leading-relaxed">
-                Every completed product undergoes strict dimensional checks, uniform welding assessments, and rust-proofing treatment before safe transport.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
 
-      {/* Production Domain Grid */}
-      <div className="bg-white border-b border-slate-200/80 py-20 px-6">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-extrabold tracking-tight text-center text-slate-900 mb-12">
-            What We Manufacture
+
+              <h3 className="text-lg font-bold mt-6">
+                Industrial Solutions
+              </h3>
+
+
+              <p className="text-slate-500 text-sm leading-6 mt-3">
+                Practical metal products and fabrication solutions
+                for workshops, businesses and industries.
+              </p>
+
+            </div>
+
+
+            {/* Card 4 */}
+
+            <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-7 hover:-translate-y-2 hover:shadow-xl hover:border-indigo-200 transition-all duration-300">
+
+              <div className="w-11 h-11 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-black">
+                04
+              </div>
+
+
+              <h3 className="text-lg font-bold mt-6">
+                Small & Bulk Orders
+              </h3>
+
+
+              <p className="text-slate-500 text-sm leading-6 mt-3">
+                Requirements can range from individual products
+                to larger quantities for businesses.
+              </p>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      {/* =========================================================
+          OUR VALUES
+      ========================================================= */}
+
+      <section className="bg-white py-16 sm:py-20 lg:py-24">
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+
+            {/* Left */}
+
+            <div>
+
+              <span className="text-indigo-600 text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.25em]">
+                What Matters To Us
+              </span>
+
+
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black mt-4 leading-tight">
+
+                The Way We
+
+                <span className="text-indigo-600">
+                  {" "}Work
+                </span>
+
+              </h2>
+
+
+              <p className="text-slate-500 text-sm md:text-base leading-7 mt-5 max-w-xl">
+                Our approach is based on understanding requirements,
+                practical fabrication and maintaining consistency in
+                the work we deliver.
+              </p>
+
+            </div>
+
+
+            {/* Values */}
+
+            <div className="space-y-4">
+
+              {/* Value 1 */}
+
+              <div className="flex gap-4 p-5 sm:p-6 bg-slate-50 border border-slate-200 rounded-2xl">
+
+                <div className="w-11 h-11 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-black shrink-0">
+                  01
+                </div>
+
+
+                <div>
+
+                  <h3 className="font-bold text-lg">
+                    Understanding Requirements
+                  </h3>
+
+                  <p className="text-slate-500 text-sm leading-6 mt-1">
+                    We focus on understanding the dimensions,
+                    material and intended application.
+                  </p>
+
+                </div>
+
+              </div>
+
+
+              {/* Value 2 */}
+
+              <div className="flex gap-4 p-5 sm:p-6 bg-slate-50 border border-slate-200 rounded-2xl">
+
+                <div className="w-11 h-11 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-black shrink-0">
+                  02
+                </div>
+
+
+                <div>
+
+                  <h3 className="font-bold text-lg">
+                    Practical Fabrication
+                  </h3>
+
+                  <p className="text-slate-500 text-sm leading-6 mt-1">
+                    Solutions are developed around actual usage
+                    instead of unnecessary complexity.
+                  </p>
+
+                </div>
+
+              </div>
+
+
+              {/* Value 3 */}
+
+              <div className="flex gap-4 p-5 sm:p-6 bg-slate-50 border border-slate-200 rounded-2xl">
+
+                <div className="w-11 h-11 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-black shrink-0">
+                  03
+                </div>
+
+
+                <div>
+
+                  <h3 className="font-bold text-lg">
+                    Long-Term Relationships
+                  </h3>
+
+                  <p className="text-slate-500 text-sm leading-6 mt-1">
+                    We aim to build lasting relationships through
+                    consistent communication and service.
+                  </p>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      {/* =========================================================
+          HOW WE WORK
+      ========================================================= */}
+
+      <section className="bg-slate-950 py-16 sm:py-20 lg:py-24 relative overflow-hidden">
+
+        {/* Glow */}
+
+        <div className="absolute right-0 top-0 w-72 sm:w-96 h-72 sm:h-96 bg-indigo-600/10 blur-[120px] rounded-full" />
+
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">
+
+          <div className="max-w-3xl mx-auto text-center mb-10 sm:mb-12">
+
+            <span className="text-indigo-400 text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.25em]">
+              How We Work
+            </span>
+
+
+            <h2 className="text-white text-3xl sm:text-4xl md:text-5xl font-black mt-4 leading-tight">
+
+              From Requirement
+
+              <span className="text-indigo-400">
+                {" "}to Fabrication
+              </span>
+
+            </h2>
+
+          </div>
+
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
+
+            {/* Step 1 */}
+
+            <div className="border border-white/10 bg-white/[0.03] rounded-2xl p-6 sm:p-7">
+
+              <span className="text-indigo-400 text-3xl font-black">
+                01
+              </span>
+
+
+              <h3 className="text-white text-lg font-bold mt-5">
+                Discuss
+              </h3>
+
+
+              <p className="text-slate-400 text-sm leading-6 mt-3">
+                Share your required dimensions, material, quantity
+                and application.
+              </p>
+
+            </div>
+
+
+            {/* Step 2 */}
+
+            <div className="border border-white/10 bg-white/[0.03] rounded-2xl p-6 sm:p-7">
+
+              <span className="text-indigo-400 text-3xl font-black">
+                02
+              </span>
+
+
+              <h3 className="text-white text-lg font-bold mt-5">
+                Fabricate
+              </h3>
+
+
+              <p className="text-slate-400 text-sm leading-6 mt-3">
+                The product is fabricated according to the discussed
+                requirements and specifications.
+              </p>
+
+            </div>
+
+
+            {/* Step 3 */}
+
+            <div className="border border-white/10 bg-white/[0.03] rounded-2xl p-6 sm:p-7">
+
+              <span className="text-indigo-400 text-3xl font-black">
+                03
+              </span>
+
+
+              <h3 className="text-white text-lg font-bold mt-5">
+                Complete
+              </h3>
+
+
+              <p className="text-slate-400 text-sm leading-6 mt-3">
+                The completed product is checked and prepared for
+                delivery or collection.
+              </p>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      {/* =========================================================
+          REACH & ORDERS
+      ========================================================= */}
+
+      <section className="bg-slate-100 py-16 sm:py-20 lg:py-24">
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+            {/* Pune */}
+
+            <div className="bg-white rounded-2xl border border-slate-200 p-7 sm:p-8">
+
+              <span className="text-indigo-600 text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.25em]">
+                Based In
+              </span>
+
+
+              <h3 className="text-2xl sm:text-3xl font-black mt-3">
+                Pune
+              </h3>
+
+
+              <p className="text-slate-500 text-sm leading-6 mt-3">
+                Located in Pune, Yassh Enterprises serves fabrication
+                and metal requirements for businesses, workshops and
+                industrial applications.
+              </p>
+
+            </div>
+
+
+            {/* Orders */}
+
+            <div className="bg-slate-950 rounded-2xl border border-slate-800 p-7 sm:p-8">
+
+              <span className="text-indigo-400 text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.25em]">
+                Order Requirements
+              </span>
+
+
+              <h3 className="text-white text-2xl sm:text-3xl font-black mt-3">
+                Small to Bulk
+              </h3>
+
+
+              <p className="text-slate-400 text-sm leading-6 mt-3">
+                Whether you require a single custom product or a
+                larger quantity, requirements can be discussed based
+                on the project.
+              </p>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      {/* =========================================================
+          CTA
+      ========================================================= */}
+
+      <section className="bg-slate-900 py-12 sm:py-14 lg:py-16 text-center text-white relative overflow-hidden">
+
+        <div className="absolute -right-32 -top-32 w-72 sm:w-96 h-72 sm:h-96 bg-indigo-600/10 blur-[100px] rounded-full" />
+
+        <div className="relative max-w-3xl mx-auto px-4 sm:px-6">
+
+          <span className="text-indigo-400 text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.25em]">
+            Work With Yassh
+          </span>
+
+
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-black mt-2">
+
+            Have a Metal
+
+            <span className="text-indigo-400">
+              {" "}Requirement?
+            </span>
+
           </h2>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {/* Box 1 */}
-            <div className="bg-slate-50/50 rounded-2xl p-8 border border-slate-150 shadow-sm flex flex-col items-center text-center">
-              <div className="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center mb-5">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-2.5">Metal Boxes</h3>
-              <p className="text-slate-600 text-sm leading-relaxed font-medium">
-                Custom engineered heavy-gauge enclosures and specialized storage panels optimized for industrial operations.
-              </p>
-            </div>
 
-            {/* Box 2 */}
-            <div className="bg-slate-50/50 rounded-2xl p-8 border border-slate-150 shadow-sm flex flex-col items-center text-center">
-              <div className="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center mb-5">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-2.5">Roofing Sheets</h3>
-              <p className="text-slate-600 text-sm leading-relaxed font-medium">
-                High-tensile galvanized, premium color-coated, and weatherproof structural corrugated shielding panels.
-              </p>
-            </div>
+          <p className="text-slate-300 text-xs md:text-sm leading-6 max-w-xl mx-auto mt-3">
+            Tell us what you need and discuss your custom fabrication
+            or product requirement with Yassh Enterprises.
+          </p>
 
-            {/* Box 3 */}
-            <div className="bg-slate-50/50 rounded-2xl p-8 border border-slate-150 shadow-sm flex flex-col items-center text-center">
-              <div className="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center mb-5">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-2.5">Fabrication Work</h3>
-              <p className="text-slate-600 text-sm leading-relaxed font-medium">
-                High-grade customized tooling, welding, and laser processing designed around exact engineering blueprints.
-              </p>
-            </div>
+
+          <div className="flex flex-col sm:flex-row justify-center gap-3 mt-6">
+
+            <Link
+              to="/contact"
+              className="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-3 rounded-xl font-bold text-xs transition w-full sm:w-auto"
+            >
+              Contact Us →
+            </Link>
+
+
+            <Link
+              to="/products"
+              className="border border-slate-700 hover:border-slate-500 text-white px-6 py-3 rounded-xl font-bold text-xs transition w-full sm:w-auto"
+            >
+              Browse Products
+            </Link>
+
           </div>
+
         </div>
-      </div>
 
-      {/* Target Industries */}
-      <div className="max-w-6xl mx-auto px-6 py-20">
-        <h2 className="text-3xl font-extrabold tracking-tight text-center text-slate-900 mb-4">
-          Who We Serve
-        </h2>
-        <p className="text-slate-500 text-center max-w-xl mx-auto mb-16 text-sm font-medium">
-          Our products and fabrication work are trusted across diverse industrial sectors.
-        </p>
-
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          <div className="bg-white p-6 rounded-xl border border-slate-200/60 shadow-sm">
-            <h4 className="font-bold text-slate-900 mb-2">Infrastructure & Construction</h4>
-            <p className="text-slate-600 text-xs md:text-sm leading-relaxed">
-              Supplying high-durability roofing sheets and structural metal solutions built to withstand heavy weather conditions.
-            </p>
-          </div>
-
-          <div className="bg-white p-6 rounded-xl border border-slate-200/60 shadow-sm">
-            <h4 className="font-bold text-slate-900 mb-2">Industrial Manufacturing</h4>
-            <p className="text-slate-600 text-xs md:text-sm leading-relaxed">
-              Custom-crafted machinery enclosures, storage boxes, and brackets finished to exact technical specifications.
-            </p>
-          </div>
-
-          <div className="bg-white p-6 rounded-xl border border-slate-200/60 shadow-sm">
-            <h4 className="font-bold text-slate-900 mb-2">Commercial Businesses</h4>
-            <p className="text-slate-600 text-xs md:text-sm leading-relaxed">
-              Providing flexible batch-production and reliable metal fabrication services for local enterprises across Mumbai.
-            </p>
-          </div>
-        </div>
-      </div>
+      </section>
 
     </div>
   );

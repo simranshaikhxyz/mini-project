@@ -4,7 +4,7 @@ import API from "../../services/api";
 
 function AddProduct() {
   const navigate = useNavigate();
-  const { id } = useParams(); // Extract product ID if in edit mode
+  const { id } = useParams();
   const isEditMode = Boolean(id);
 
   const [product, setProduct] = useState({
@@ -14,7 +14,7 @@ function AddProduct() {
     materialType: "",
     thickness: "",
     color: "",
-    image: "",
+    images: [], // Changed from single 'image' string to an array 'images'
     customizable: false,
     dimensions: {
       length: "",
@@ -27,7 +27,6 @@ function AddProduct() {
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  // Fetch product data if in edit mode
   useEffect(() => {
     if (!isEditMode) return;
 
@@ -35,7 +34,7 @@ function AddProduct() {
       try {
         setLoading(true);
         const { data } = await API.get(`/products/${id}`);
-        
+
         setProduct({
           productName: data.productName || "",
           description: data.description || "",
@@ -43,7 +42,8 @@ function AddProduct() {
           materialType: data.materialType || "",
           thickness: data.thickness || "",
           color: data.color || "",
-          image: data.image || "",
+          // Support both legacy single 'image' string or modern 'images' array from backend
+          images: data.images && data.images.length > 0 ? data.images : (data.image ? [data.image] : []),
           customizable: data.customizable || false,
           dimensions: {
             length: data.dimensions?.length || "",
@@ -52,7 +52,7 @@ function AddProduct() {
           },
         });
       } catch (error) {
-        console.error(error);
+        console.error("Fetch product error:", error);
         alert(error.response?.data?.message || "Failed to load product details.");
         navigate("/admin/products");
       } finally {
@@ -83,55 +83,56 @@ function AddProduct() {
   };
 
   const handleImageUpload = async (e) => {
-    const file = e.target.files[0];
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
 
-    if (!file) return;
-
-    const allowedTypes = [
-      "image/jpeg",
-      "image/jpg",
-      "image/png",
-      "image/webp",
-    ];
-
-    if (!allowedTypes.includes(file.type)) {
-      alert("Only JPG, PNG and WEBP images are allowed.");
-      return;
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+    
+    for (const file of files) {
+      if (!allowedTypes.includes(file.type)) {
+        alert("Only JPG, PNG and WEBP images are allowed.");
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        alert(`Image "${file.name}" exceeds the 5 MB limit.`);
+        return;
+      }
     }
-
-    if (file.size > 5 * 1024 * 1024) {
-      alert("Image size should be less than 5 MB.");
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("image", file);
 
     try {
       setUploading(true);
+      const uploadedImageUrls = [];
 
-      const { data } = await API.post("/upload", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      // Upload files sequentially or in parallel
+      for (const file of files) {
+        const formData = new FormData();
+        formData.append("image", file); // Adjust to "images" if your backend expects an array field name for single-file loop
+        const { data } = await API.post("/upload", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        if (data.image) {
+          uploadedImageUrls.push(data.image);
+        }
+      }
 
       setProduct((prev) => ({
         ...prev,
-        image: data.image,
+        images: [...prev.images, ...uploadedImageUrls],
       }));
-
-      alert("Image uploaded successfully.");
+      alert("Images uploaded successfully.");
     } catch (error) {
-      console.log(error);
-
-      alert(
-        error.response?.data?.message ||
-        "Failed to upload image."
-      );
+      console.error("Upload image error:", error);
+      alert(error.response?.data?.message || "Failed to upload images.");
     } finally {
       setUploading(false);
     }
+  };
+
+  const removeImage = (indexToRemove) => {
+    setProduct((prev) => ({
+      ...prev,
+      images: prev.images.filter((_, index) => index !== indexToRemove),
+    }));
   };
 
   const submitHandler = async (e) => {
@@ -140,61 +141,45 @@ function AddProduct() {
     if (product.productName.trim().length < 3) {
       return alert("Product name must contain at least 3 characters.");
     }
-
     if (product.description.trim().length < 20) {
       return alert("Description must contain at least 20 characters.");
     }
-
     if (Number(product.price) <= 0) {
       return alert("Enter a valid product price.");
     }
-
     if (Number(product.dimensions.length) <= 0) {
       return alert("Enter a valid length.");
     }
-
     if (Number(product.dimensions.width) <= 0) {
       return alert("Enter a valid width.");
     }
-
-    if (!product.image) {
-      return alert("Please upload a product image.");
+    if (!product.images || product.images.length === 0) {
+      return alert("Please upload at least one product image.");
     }
 
     try {
       setSaving(true);
 
-      const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-
-      if (!userInfo || !userInfo.token) {
-        alert("Please login again.");
-        navigate("/login");
-        return;
-      }
-
-      const config = {
-        headers: {
-          Authorization: `Bearer ${userInfo.token}`,
-        },
+      // Payload matching multi-image schema structure
+      const payload = {
+        ...product,
+        image: product.images[0], // Keep backward compatibility for single 'image' field if needed
       };
 
       if (isEditMode) {
-        // Send PUT request to update product
-        await API.put(`/products/${id}`, product, config);
+        await API.put(`/products/${id}`, payload);
         alert("Product updated successfully.");
       } else {
-        // Send POST request to create product
-        await API.post("/products", product, config);
+        await API.post("/products", payload);
         alert("Product added successfully.");
       }
 
       navigate("/admin/products");
     } catch (error) {
-      console.log(error);
-
+      console.error("Save product error:", error);
       alert(
         error.response?.data?.message ||
-        `Failed to ${isEditMode ? "update" : "add"} product.`
+          `Failed to ${isEditMode ? "update" : "add"} product.`
       );
     } finally {
       setSaving(false);
@@ -210,15 +195,13 @@ function AddProduct() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 py-10">
+    <div className="min-h-screen bg-slate-50 py-10 antialiased font-sans">
       <div className="max-w-5xl mx-auto px-6">
-
-        {/* Dynamic Header */}
+        {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-slate-900">
             {isEditMode ? "Edit Product" : "Add New Product"}
           </h1>
-
           <p className="text-slate-500 mt-2">
             {isEditMode
               ? "Update existing product details and save changes."
@@ -228,44 +211,41 @@ function AddProduct() {
 
         <form
           onSubmit={submitHandler}
-          className="bg-white rounded-2xl shadow-lg p-8 space-y-10"
+          className="bg-white rounded-2xl shadow-lg p-8 space-y-10 border border-slate-100"
         >
-
           {/* General Information */}
           <section>
-            <h2 className="text-xl font-semibold mb-6 border-b pb-2">
+            <h2 className="text-xl font-semibold mb-6 border-b pb-2 text-slate-800">
               General Information
             </h2>
 
             <div className="space-y-5">
               <div>
-                <label className="block mb-2 font-medium">
+                <label className="block mb-2 font-medium text-slate-700">
                   Product Name
                 </label>
-
                 <input
                   type="text"
                   name="productName"
                   value={product.productName}
                   onChange={handleChange}
                   placeholder="Enter product name"
-                  className="w-full border rounded-xl p-3 focus:ring-2 focus:ring-indigo-500 outline-none"
+                  className="w-full border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-indigo-500 outline-none transition"
                   required
                 />
               </div>
 
               <div>
-                <label className="block mb-2 font-medium">
+                <label className="block mb-2 font-medium text-slate-700">
                   Description
                 </label>
-
                 <textarea
                   rows="5"
                   name="description"
                   value={product.description}
                   onChange={handleChange}
                   placeholder="Enter detailed product description..."
-                  className="w-full border rounded-xl p-3 focus:ring-2 focus:ring-indigo-500 outline-none resize-none"
+                  className="w-full border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-indigo-500 outline-none resize-none transition"
                   required
                 />
               </div>
@@ -274,67 +254,63 @@ function AddProduct() {
 
           {/* Product Details */}
           <section>
-            <h2 className="text-xl font-semibold mb-6 border-b pb-2">
+            <h2 className="text-xl font-semibold mb-6 border-b pb-2 text-slate-800">
               Product Details
             </h2>
 
             <div className="grid md:grid-cols-2 gap-6">
               <div>
-                <label className="block mb-2 font-medium">
+                <label className="block mb-2 font-medium text-slate-700">
                   Price (₹)
                 </label>
-
                 <input
                   type="number"
                   name="price"
                   value={product.price}
                   onChange={handleChange}
-                  className="w-full border rounded-xl p-3"
+                  className="w-full border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-indigo-500 outline-none transition"
                   required
                 />
               </div>
 
               <div>
-                <label className="block mb-2 font-medium">
+                <label className="block mb-2 font-medium text-slate-700">
                   Material Type
                 </label>
-
                 <input
                   type="text"
                   name="materialType"
                   value={product.materialType}
                   onChange={handleChange}
-                  className="w-full border rounded-xl p-3"
+                  className="w-full border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-indigo-500 outline-none transition"
                   required
                 />
               </div>
 
               <div>
-                <label className="block mb-2 font-medium">
+                <label className="block mb-2 font-medium text-slate-700">
                   Thickness
                 </label>
-
                 <input
                   type="text"
                   name="thickness"
                   value={product.thickness}
                   onChange={handleChange}
-                  className="w-full border rounded-xl p-3"
+                  className="w-full border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-indigo-500 outline-none transition"
                   required
                 />
               </div>
 
               <div>
-                <label className="block mb-2 font-medium">
+                <label className="block mb-2 font-medium text-slate-700">
                   Color
                 </label>
-
                 <input
                   type="text"
                   name="color"
                   value={product.color}
                   onChange={handleChange}
-                  className="w-full border rounded-xl p-3"
+                  className="w-full border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-indigo-500 outline-none transition"
                 />
               </div>
             </div>
@@ -342,51 +318,48 @@ function AddProduct() {
 
           {/* Dimensions */}
           <section>
-            <h2 className="text-xl font-semibold mb-6 border-b pb-2">
+            <h2 className="text-xl font-semibold mb-6 border-b pb-2 text-slate-800">
               Dimensions
             </h2>
 
             <div className="grid grid-cols-3 gap-6">
               <div>
-                <label className="block mb-2 font-medium">
+                <label className="block mb-2 font-medium text-slate-700">
                   Length
                 </label>
-
                 <input
                   type="number"
                   name="length"
                   value={product.dimensions.length}
                   onChange={handleChange}
-                  className="w-full border rounded-xl p-3"
+                  className="w-full border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-indigo-500 outline-none transition"
                   required
                 />
               </div>
 
               <div>
-                <label className="block mb-2 font-medium">
+                <label className="block mb-2 font-medium text-slate-700">
                   Width
                 </label>
-
                 <input
                   type="number"
                   name="width"
                   value={product.dimensions.width}
                   onChange={handleChange}
-                  className="w-full border rounded-xl p-3"
+                  className="w-full border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-indigo-500 outline-none transition"
                   required
                 />
               </div>
 
               <div>
-                <label className="block mb-2 font-medium">
+                <label className="block mb-2 font-medium text-slate-700">
                   Unit
                 </label>
-
                 <select
                   name="unit"
                   value={product.dimensions.unit}
                   onChange={handleChange}
-                  className="w-full border rounded-xl p-3"
+                  className="w-full border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-indigo-500 outline-none transition bg-white"
                 >
                   <option value="ft">ft</option>
                   <option value="inch">inch</option>
@@ -397,15 +370,16 @@ function AddProduct() {
             </div>
           </section>
 
-          {/* Image Upload / Replacement */}
+          {/* Multiple Image Upload */}
           <section>
-            <h2 className="text-xl font-semibold mb-6 border-b pb-2">
-              Product Image
+            <h2 className="text-xl font-semibold mb-6 border-b pb-2 text-slate-800">
+              Product Images (Multiple allowed)
             </h2>
 
-            <label className="block border-2 border-dashed border-gray-300 rounded-2xl p-10 cursor-pointer hover:border-indigo-500 transition text-center">
+            <label className="block border-2 border-dashed border-slate-300 rounded-2xl p-10 cursor-pointer hover:border-indigo-500 transition text-center bg-slate-50/50">
               <input
                 type="file"
+                multiple
                 accept="image/*"
                 disabled={uploading}
                 onChange={handleImageUpload}
@@ -416,55 +390,67 @@ function AddProduct() {
                 <div>
                   <div className="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
                   <p className="mt-4 text-indigo-600 font-semibold">
-                    Uploading image...
+                    Uploading images...
                   </p>
                 </div>
               ) : (
                 <>
                   <div className="text-5xl mb-3">📷</div>
-                  <p className="text-lg font-semibold">
-                    {product.image
-                      ? "Click or Drag & Drop to Replace Image"
-                      : "Click or Drag & Drop Product Image"}
+                  <p className="text-lg font-semibold text-slate-700">
+                    Click or Drag & Drop to Add More Product Images
                   </p>
-                  <p className="text-sm text-gray-500 mt-2">
-                    PNG, JPG or WEBP (Maximum 5 MB)
+                  <p className="text-sm text-slate-500 mt-2">
+                    PNG, JPG or WEBP (Maximum 5 MB each)
                   </p>
                 </>
               )}
             </label>
 
-            {product.image && (
-              <div className="mt-8 flex flex-col items-center">
-                <img
-                  src={product.image}
-                  alt="Preview"
-                  className="w-72 h-72 object-cover rounded-2xl shadow-lg border"
-                />
-                <p className="text-green-600 font-semibold mt-4">
-                  ✓ {isEditMode ? "Current / Updated image" : "Image uploaded successfully"}
-                </p>
+            {/* Preview Grid for Multiple Images */}
+            {product.images && product.images.length > 0 && (
+              <div className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-4">
+                {product.images.map((imgUrl, index) => (
+                  <div key={index} className="relative group aspect-square rounded-2xl overflow-hidden border border-slate-200 shadow-sm bg-slate-100">
+                    <img
+                      src={imgUrl}
+                      alt={`Product preview ${index + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeImage(index)}
+                      className="absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition shadow-md"
+                      title="Remove image"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                    <span className="absolute bottom-2 left-2 bg-slate-900/70 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-0.5 rounded">
+                      #{index + 1}
+                    </span>
+                  </div>
+                ))}
               </div>
             )}
           </section>
 
           {/* Customizable */}
           <section>
-            <h2 className="text-xl font-semibold mb-6 border-b pb-2">
+            <h2 className="text-xl font-semibold mb-6 border-b pb-2 text-slate-800">
               Additional Options
             </h2>
 
-            <label className="flex items-center gap-3">
+            <label className="flex items-center gap-3 cursor-pointer">
               <input
                 type="checkbox"
                 id="customizable"
                 name="customizable"
                 checked={product.customizable}
                 onChange={handleChange}
-                className="w-5 h-5 accent-indigo-600"
+                className="w-5 h-5 accent-indigo-600 rounded cursor-pointer"
               />
-
-              <span className="font-medium">
+              <span className="font-medium text-slate-700">
                 This product can be customized.
               </span>
             </label>
@@ -475,16 +461,15 @@ function AddProduct() {
             <button
               type="button"
               onClick={() => navigate("/admin/products")}
-              className="px-7 py-3 rounded-xl border border-gray-300 hover:bg-gray-100 transition"
+              className="px-7 py-3 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-100 transition font-medium text-sm"
             >
               Cancel
             </button>
 
-            {/* Dynamic Button Label */}
             <button
               type="submit"
               disabled={saving || uploading}
-              className="bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300 text-white px-8 py-3 rounded-xl font-semibold transition"
+              className="bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300 text-white px-8 py-3 rounded-xl font-semibold transition text-sm shadow-sm"
             >
               {saving
                 ? isEditMode
@@ -495,9 +480,7 @@ function AddProduct() {
                 : "Add Product"}
             </button>
           </div>
-
         </form>
-
       </div>
     </div>
   );

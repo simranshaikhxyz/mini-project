@@ -7,13 +7,33 @@ function Header() {
   const navigate = useNavigate();
 
   const [showMenu, setShowMenu] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
   const menuRef = useRef(null);
 
   const handleLogout = () => {
     logout();
     setShowMenu(false);
+    setShowMobileMenu(false);
     navigate("/login");
   };
+
+  const navStyle = ({ isActive }) =>
+    `relative py-2 text-sm font-semibold tracking-wide transition-colors duration-200
+    after:absolute after:bottom-0 after:left-0 after:h-0.5 after:bg-indigo-600
+    after:rounded-full after:transition-all after:duration-300
+    ${
+      isActive
+        ? "text-slate-950 after:w-full"
+        : "text-slate-600 hover:text-slate-950 after:w-0 hover:after:w-full"
+    }`;
+
+  const mobileNavStyle = ({ isActive }) =>
+    `block px-4 py-3 rounded-xl text-sm font-semibold transition
+    ${
+      isActive
+        ? "bg-slate-100 text-slate-950"
+        : "text-slate-600 hover:bg-slate-50 hover:text-slate-950"
+    }`;
 
   useEffect(() => {
     const closeMenu = (e) => {
@@ -23,43 +43,43 @@ function Header() {
     };
 
     document.addEventListener("mousedown", closeMenu);
-    return () => document.removeEventListener("mousedown", closeMenu);
-  }, []);
 
-  const navStyle = ({ isActive }) =>
-    `text-sm font-semibold tracking-wide transition-all duration-150 relative py-2 ${
-      isActive
-        ? "text-indigo-600 after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-indigo-600 after:rounded-full"
-        : "text-slate-600 hover:text-indigo-600"
-    }`;
+    return () => {
+      document.removeEventListener("mousedown", closeMenu);
+    };
+  }, []);
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-sm">
-      <div className="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
 
-        {/* Brand Logo */}
-        <Link to="/" className="flex items-center gap-3 group">
-          <div className="w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center text-white font-bold text-lg shadow-sm transition-transform duration-200 group-hover:scale-[1.02]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 h-16 sm:h-[72px] flex items-center justify-between">
+
+        {/* LOGO */}
+        <Link to="/" className="flex items-center gap-3 group shrink-0">
+
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-slate-950 flex items-center justify-center text-white font-bold text-lg shadow-sm transition-all duration-300 group-hover:scale-105 group-hover:rounded-lg">
             Y
           </div>
+
           <div>
-            <h1 className="text-xl font-extrabold text-slate-900 tracking-tight leading-none">
+            <h1 className="text-lg sm:text-xl font-extrabold text-slate-900 tracking-tight leading-none">
               YASSH
             </h1>
-            <p className="text-[9px] tracking-[4px] text-slate-400 font-bold mt-0.5 uppercase leading-none">
+
+            <p className="text-[8px] sm:text-[9px] tracking-[3px] sm:tracking-[4px] text-slate-400 font-bold mt-0.5 uppercase">
               Enterprises
             </p>
           </div>
+
         </Link>
 
-        {/* Main Navigation Links */}
-        <nav className="flex items-center gap-8">
+        {/* DESKTOP NAVIGATION */}
+        <nav className="hidden md:flex items-center gap-6 lg:gap-8">
+
           <NavLink to="/" className={navStyle}>
             Home
           </NavLink>
-          <NavLink to="/about" className={navStyle}>
-            About
-          </NavLink>
+
           <NavLink to="/products" className={navStyle}>
             Products
           </NavLink>
@@ -74,116 +94,277 @@ function Header() {
             Contact
           </NavLink>
 
-          {/* Authentication Action / Profile Area */}
           {!userInfo ? (
+
+            /* LOGIN */
             <Link
               to="/login"
-              className="bg-slate-950 hover:bg-slate-900 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition duration-150 shadow-sm"
+              className="bg-slate-950 hover:bg-slate-800 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
             >
               Login
             </Link>
+
           ) : (
+
+            /* PROFILE DROPDOWN */
             <div className="relative" ref={menuRef}>
-              {/* Trigger Button */}
+
               <button
                 onClick={() => setShowMenu(!showMenu)}
-                className="flex items-center gap-2.5 pl-2.5 pr-4 py-1.5 rounded-full border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition duration-150 focus:outline-none"
+                className="flex items-center gap-2.5 pl-2 pr-3.5 py-1.5 rounded-full border border-slate-200 hover:bg-slate-50 transition"
               >
-                <div className="w-8 h-8 rounded-full bg-indigo-500 text-white font-bold text-sm flex items-center justify-center shadow-inner">
-                  {userInfo.name.charAt(0).toUpperCase()}
+
+                {/* Profile Initial */}
+                <div className="w-8 h-8 rounded-full bg-slate-950 text-white font-bold text-sm flex items-center justify-center">
+                  {userInfo.name?.charAt(0).toUpperCase() || "U"}
                 </div>
 
-                <div className="text-left hidden sm:block">
-                  <p className="font-bold text-xs text-slate-800 leading-tight">
-                    {userInfo.name}
+                {/* Name and Role */}
+                <div className="hidden lg:block text-left">
+
+                  <p className="font-bold text-xs text-slate-800 max-w-[100px] truncate">
+                    {userInfo.name || "User"}
                   </p>
-                  <p className="text-[10px] font-semibold text-slate-400 tracking-wide uppercase leading-none mt-0.5">
+
+                  <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide">
                     {userInfo.isAdmin ? "Admin" : "Customer"}
                   </p>
+
                 </div>
 
-                <svg
-                  className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${
+                {/* Arrow */}
+                <span
+                  className={`text-slate-400 transition-transform duration-300 ${
                     showMenu ? "rotate-180" : ""
                   }`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" />
-                </svg>
+                  ↓
+                </span>
+
               </button>
 
-              {/* Dropdown Menu */}
+              {/* DROPDOWN */}
               {showMenu && (
-                <div className="absolute right-0 mt-3.5 w-72 bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden divide-y divide-slate-100">
-                  
-                  {/* User Profile Summary */}
+                <div className="absolute right-0 mt-3 w-72 max-w-[calc(100vw-2rem)] bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden">
+
+                  {/* User Information */}
                   <div className="bg-slate-950 text-white p-5">
-                    <h2 className="font-bold text-base tracking-tight truncate">
+
+                    <p className="font-bold truncate">
                       {userInfo.name}
-                    </h2>
-                    <p className="text-xs text-slate-400 truncate mt-0.5 font-medium">
+                    </p>
+
+                    <p className="text-xs text-slate-400 truncate mt-1">
                       {userInfo.email}
                     </p>
+
                   </div>
 
-                  {/* Nav Links Action Stack */}
-                  <div className="py-1.5">
+                  {/* Menu Items */}
+                  <div className="py-2">
+
+                    {/* MY PROFILE */}
                     <Link
                       to="/profile"
                       onClick={() => setShowMenu(false)}
-                      className="flex items-center gap-3 px-5 py-3 text-sm font-semibold text-slate-700 hover:text-indigo-600 hover:bg-slate-50 transition"
+                      className="block px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-slate-950 transition"
                     >
-                      <svg className="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                      </svg>
                       My Profile
                     </Link>
 
+                    {/* MY ORDERS */}
                     <Link
                       to="/myorders"
                       onClick={() => setShowMenu(false)}
-                      className="flex items-center gap-3 px-5 py-3 text-sm font-semibold text-slate-700 hover:text-indigo-600 hover:bg-slate-50 transition"
+                      className="block px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-slate-950 transition"
                     >
-                      <svg className="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                      </svg>
                       My Orders
                     </Link>
 
+                    {/* ADMIN PANEL */}
                     {userInfo.isAdmin && (
                       <Link
                         to="/admin"
                         onClick={() => setShowMenu(false)}
-                        className="flex items-center gap-3 px-5 py-3 text-sm font-semibold text-slate-700 hover:text-indigo-600 hover:bg-slate-50 transition"
+                        className="block px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-slate-950 transition"
                       >
-                        <svg className="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
                         Admin Dashboard
                       </Link>
                     )}
+
                   </div>
 
-                  {/* Sign Out CTA Action */}
-                  <div className="py-1.5">
+                  {/* LOGOUT */}
+                  <div className="border-t border-slate-100 p-2">
+
                     <button
                       onClick={handleLogout}
-                      className="w-full flex items-center gap-3 px-5 py-3 text-sm font-semibold text-rose-600 hover:bg-rose-50/60 transition text-left"
+                      className="w-full text-left px-4 py-3 rounded-xl text-sm font-semibold text-rose-600 hover:bg-rose-50 transition"
                     >
-                      <svg className="w-4 h-4 shrink-0 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                      </svg>
                       Sign Out
                     </button>
+
                   </div>
 
                 </div>
               )}
+
             </div>
           )}
+        </nav>
+
+        {/* MOBILE BUTTON */}
+        <button
+          onClick={() => setShowMobileMenu(!showMobileMenu)}
+          className="md:hidden w-10 h-10 rounded-xl border border-slate-200 flex items-center justify-center hover:bg-slate-50 transition"
+          aria-label="Toggle menu"
+        >
+
+          <div className="space-y-1.5">
+
+            <span
+              className={`block w-5 h-0.5 bg-slate-800 transition ${
+                showMobileMenu ? "rotate-45 translate-y-2" : ""
+              }`}
+            />
+
+            <span
+              className={`block w-5 h-0.5 bg-slate-800 transition ${
+                showMobileMenu ? "opacity-0" : ""
+              }`}
+            />
+
+            <span
+              className={`block w-5 h-0.5 bg-slate-800 transition ${
+                showMobileMenu ? "-rotate-45 -translate-y-1" : ""
+              }`}
+            />
+
+          </div>
+
+        </button>
+
+      </div>
+
+      {/* MOBILE NAVIGATION */}
+      <div
+        className={`md:hidden overflow-hidden border-t border-slate-200 bg-white transition-all duration-300 ${
+          showMobileMenu
+            ? "max-h-[600px] opacity-100"
+            : "max-h-0 opacity-0"
+        }`}
+      >
+
+        <nav className="px-4 sm:px-6 py-4 space-y-1">
+
+          <NavLink
+            to="/"
+            className={mobileNavStyle}
+            onClick={() => setShowMobileMenu(false)}
+          >
+            Home
+          </NavLink>
+
+          <NavLink
+            to="/products"
+            className={mobileNavStyle}
+            onClick={() => setShowMobileMenu(false)}
+          >
+            Products
+          </NavLink>
+
+          {userInfo && (
+            <NavLink
+              to="/myorders"
+              className={mobileNavStyle}
+              onClick={() => setShowMobileMenu(false)}
+            >
+              My Orders
+            </NavLink>
+          )}
+
+          <NavLink
+            to="/contact"
+            className={mobileNavStyle}
+            onClick={() => setShowMobileMenu(false)}
+          >
+            Contact
+          </NavLink>
+
+          {!userInfo ? (
+
+            <Link
+              to="/login"
+              onClick={() => setShowMobileMenu(false)}
+              className="block text-center bg-slate-950 text-white px-4 py-3 rounded-xl text-sm font-semibold mt-2"
+            >
+              Login
+            </Link>
+
+          ) : (
+
+            <>
+              {/* MOBILE USER INFO */}
+              <div className="mt-3 p-4 bg-slate-50 border border-slate-200 rounded-xl">
+
+                <div className="flex items-center gap-3">
+
+                  <div className="w-10 h-10 rounded-full bg-slate-950 text-white font-bold flex items-center justify-center">
+                    {userInfo.name?.charAt(0).toUpperCase() || "U"}
+                  </div>
+
+                  <div>
+
+                    <p className="font-bold text-sm text-slate-900">
+                      {userInfo.name || "User"}
+                    </p>
+
+                    <p className="text-xs text-slate-400">
+                      {userInfo.email}
+                    </p>
+
+                    <p className="text-[10px] font-semibold text-slate-400 uppercase mt-1">
+                      {userInfo.isAdmin
+                        ? "Administrator"
+                        : "Customer"}
+                    </p>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+              {/* MY PROFILE */}
+              <Link
+                to="/profile"
+                onClick={() => setShowMobileMenu(false)}
+                className="block px-4 py-3 text-sm font-semibold text-slate-600 hover:bg-slate-50 rounded-xl"
+              >
+                My Profile
+              </Link>
+
+              {/* ADMIN DASHBOARD */}
+              {userInfo.isAdmin && (
+                <Link
+                  to="/admin"
+                  onClick={() => setShowMobileMenu(false)}
+                  className="block px-4 py-3 text-sm font-semibold text-slate-600 hover:bg-slate-50 rounded-xl"
+                >
+                  Admin Dashboard
+                </Link>
+              )}
+
+              {/* SIGN OUT */}
+              <button
+                onClick={handleLogout}
+                className="w-full text-left px-4 py-3 text-sm font-semibold text-rose-600 hover:bg-rose-50 rounded-xl"
+              >
+                Sign Out
+              </button>
+            </>
+          )}
+
         </nav>
 
       </div>

@@ -1,11 +1,9 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import API from "../services/api";
-import { useAuth } from "../context/AuthContext";
 
 function Register() {
   const navigate = useNavigate();
-  const { login } = useAuth();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -80,19 +78,16 @@ function Register() {
 
     try {
       setLoading(true);
-      const { data } = await API.post("/auth/register", {
+      const userEmail = formData.email.trim().toLowerCase();
+
+      await API.post("/auth/register", {
         name: formData.name.trim(),
-        email: formData.email.trim().toLowerCase(),
+        email: userEmail,
         password: formData.password,
       });
 
-      login(data);
-
-      if (data.isAdmin) {
-        navigate("/admin");
-      } else {
-        navigate("/");
-      }
+      // Redirect to OTP verification page and pass the email address
+      navigate("/verify-otp", { state: { email: userEmail } });
     } catch (error) {
       setServerError(
         error.response?.data?.message || "Registration Failed."

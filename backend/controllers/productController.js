@@ -1,4 +1,3 @@
-
 import Product from "../models/Product.js";
 
 // ======================
@@ -16,8 +15,17 @@ export const createProduct = async (req, res) => {
       dimensions,
       color,
       customizable,
+      images,
       image,
     } = req.body;
+
+    // Handle both multi-image array and single-image fallback safely
+    const productImages =
+      images && Array.isArray(images) && images.length > 0
+        ? images
+        : image
+        ? [image]
+        : [];
 
     const product = await Product.create({
       productName,
@@ -28,7 +36,8 @@ export const createProduct = async (req, res) => {
       dimensions,
       color,
       customizable,
-      image: image || "",
+      images: productImages,
+      image: image || productImages[0] || "",
       createdBy: req.user._id,
     });
 
@@ -107,6 +116,7 @@ export const updateProduct = async (req, res) => {
       dimensions,
       color,
       customizable,
+      images,
       image,
     } = req.body;
 
@@ -121,16 +131,22 @@ export const updateProduct = async (req, res) => {
       customizable,
     };
 
-    // Use the image URL sent from frontend
-    if (image) {
+    // Update images array if sent from frontend
+    if (images && Array.isArray(images)) {
+      updateData.images = images;
+      if (images.length > 0) {
+        updateData.image = images[0];
+      }
+    } else if (image) {
       updateData.image = image;
+      updateData.images = [image];
     }
 
     const product = await Product.findByIdAndUpdate(
       req.params.id,
       updateData,
       {
-        new: true,
+        returnDocument: "after",
         runValidators: true,
       }
     );

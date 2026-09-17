@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import API from "../services/api";
 
@@ -7,19 +7,20 @@ function ProductDetails() {
   const navigate = useNavigate();
 
   const [product, setProduct] = useState(null);
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
 
-  useEffect(() => {
-    fetchProduct();
-  }, [id]);
-
-  const fetchProduct = async () => {
+  const fetchProduct = useCallback(async () => {
     try {
       const { data } = await API.get(`/products/${id}`);
       setProduct(data);
     } catch (error) {
-      console.log("ERROR:", error);
+      console.error("Failed to load product details:", error);
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    fetchProduct();
+  }, [fetchProduct]);
 
   const handleOrder = () => {
     const userInfo = JSON.parse(
@@ -62,6 +63,22 @@ function ProductDetails() {
     );
   }
 
+  // Extract images array, fallback to single image, or placeholder if none exist
+  const images =
+    product.images && product.images.length > 0
+      ? product.images
+      : product.image && product.image !== ""
+      ? [product.image]
+      : ["https://via.placeholder.com/600x400?text=Metal+Product"];
+
+  const nextImage = () => {
+    setActiveImageIndex((prev) => (prev + 1) % images.length);
+  };
+
+  const prevImage = () => {
+    setActiveImageIndex((prev) => (prev - 1 + images.length) % images.length);
+  };
+
   return (
     <div className="min-h-screen bg-slate-50/50 text-slate-800 antialiased font-sans py-12">
       <div className="max-w-6xl mx-auto px-6">
@@ -82,17 +99,63 @@ function ProductDetails() {
         {/* Product Details Wrapper */}
         <div className="grid md:grid-cols-2 gap-10 bg-white border border-slate-150 rounded-2xl p-8 shadow-sm">
           
-          {/* Left Column: Image */}
-          <div className="relative overflow-hidden bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-center">
-            <img
-              src={
-                product.image && product.image !== ""
-                  ? product.image
-                  : "https://via.placeholder.com/600x400?text=Metal+Product"
-              }
-              alt={product.productName}
-              className="w-full h-[450px] object-cover rounded-xl"
-            />
+          {/* Left Column: Image Slider & Thumbnails */}
+          <div className="space-y-4">
+            <div className="relative group overflow-hidden bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-center p-4">
+              <img
+                src={images[activeImageIndex]}
+                alt={product.productName}
+                className="max-h-[350px] w-auto object-contain rounded-lg transition-all duration-300"
+              />
+
+              {/* Slider Arrows (Only show if there is more than one image) */}
+              {images.length > 1 && (
+                <>
+                  <button
+                    onClick={prevImage}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 bg-slate-900/60 hover:bg-slate-900 text-white p-2.5 rounded-full backdrop-blur-sm transition opacity-0 group-hover:opacity-100 shadow-lg"
+                    aria-label="Previous image"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7" />
+                    </svg>
+                  </button>
+
+                  <button
+                    onClick={nextImage}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 bg-slate-900/60 hover:bg-slate-900 text-white p-2.5 rounded-full backdrop-blur-sm transition opacity-0 group-hover:opacity-100 shadow-lg"
+                    aria-label="Next image"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+
+                  <div className="absolute bottom-3 right-3 bg-slate-900/75 backdrop-blur-sm text-white text-xs font-bold px-2.5 py-1 rounded-md shadow-sm">
+                    {activeImageIndex + 1} / {images.length}
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* Thumbnail Selection Row */}
+            {images.length > 1 && (
+              <div className="grid grid-cols-4 gap-3">
+                {images.map((imgUrl, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setActiveImageIndex(index)}
+                    className={`aspect-[4/3] rounded-xl overflow-hidden border-2 transition-all bg-slate-50 ${
+                      activeImageIndex === index
+                        ? "border-indigo-600 shadow-md ring-2 ring-indigo-600/20 scale-[1.02]"
+                        : "border-slate-200 opacity-70 hover:opacity-100"
+                    }`}
+                  >
+                    <img src={imgUrl} alt={`Thumbnail ${index + 1}`} className="w-full h-full object-contain p-1" />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Right Column: Information */}

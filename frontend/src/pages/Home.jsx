@@ -1,256 +1,521 @@
 import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
 
 function Home() {
+  const [activeWork, setActiveWork] = useState(0);
+
+  const features = [
+    ["01", "Exact Material Specs", "Choose your required sheet thickness, metal type, finish, color and dimensions."],
+    ["02", "Custom Fabrication", "From storage boxes to custom enclosures, products can be made around your requirements."],
+    ["03", "Small & Bulk Orders", "We handle individual requirements as well as larger orders for businesses and industries."],
+    ["04", "Reliable Execution", "Practical metal solutions built with durability and real-world usage in mind."],
+  ];
+
+  const workShowcase = [
+    {
+      id: "01",
+      title: "Industrial Steel Rolls",
+      category: "Workshop Floor",
+      description:
+        "High-quality steel coils are stored and handled in our workshop, providing a reliable supply of raw material for precision fabrication and sheet metal work.",
+      image:
+        "https://res.cloudinary.com/cnxvqb67/image/upload/v1789633355/premium_photo-1682144783087-fe52612b1f0d.avif",
+      highlight: "Heavy-duty steel inventory"
+    },
+    {
+      id: "02",
+      title: "Precision Measurement",
+      category: "Fabrication Workshop",
+      description:
+        "Accurate measurements and careful marking are carried out by skilled craftsmen to ensure every metal component is prepared to the required dimensions.",
+      image:
+        "https://res.cloudinary.com/cnxvqb67/image/upload/v1789633199/1st.png",
+      highlight: "Accurate hand measurement"
+    },
+    {
+      id: "03",
+      title: "Sheet Metal Processing",
+      category: "Production Line",
+      description:
+        "Large metal sheets are processed and prepared for fabrication using industrial equipment, ensuring clean surfaces and consistent results across every project.",
+      image:
+        "https://res.cloudinary.com/cnxvqb67/image/upload/v1789633292/G60-Galvanized-Steel-Sheets-in-Factory-Production.webp",
+      highlight: "Industrial sheet processing"
+    },
+    {
+      id: "04",
+      title: "Metal Storage & Finishing",
+      category: "Quality Control",
+      description:
+        "Organized metal storage drawers keep components and materials securely arranged, supporting efficient handling, finishing, and quality inspection throughout production.",
+      image:
+        "https://res.cloudinary.com/cnxvqb67/image/upload/v1789633313/2nd.png",
+      highlight: "Organized component storage"
+    },
+    {
+      id: "05",
+      title: "Custom Metal Boxes",
+      category: "Custom Assembly",
+      description:
+        "Durable metal boxes and enclosures are fabricated for industrial and utility applications, with practical designs suited to different storage and protection requirements.",
+      image:
+        "https://res.cloudinary.com/cnxvqb67/image/upload/v1789640848/andrew-sharp--d271vR-S5U-unsplash.jpg",
+      highlight: "Durable custom enclosures"
+    },
+    {
+      id: "06",
+      title: "Storage & Dispatch Bins",
+      category: "Logistics Hub",
+      description:
+        "Modular storage bins provide an organized solution for keeping components and finished materials accessible, protected, and ready for handling or dispatch.",
+      image:
+        "https://res.cloudinary.com/cnxvqb67/image/upload/v1789641128/86866218-7a06-4b91-8139-d069f9cdcff7.png",
+      highlight: "Organized storage & handling"
+    }
+  ];
+
+  const process = [
+    [
+      "01",
+      "Share Your Requirement",
+      "Tell us your required dimensions, material, quantity, finish, and application. We understand your needs before starting the work.",
+      "→",
+    ],
+    [
+      "02",
+      "Precision Fabrication",
+      "Our team fabricates your product according to the agreed specifications, with attention to accuracy, finish, and practical requirements.",
+      "→",
+    ],
+    [
+      "03",
+      "Quality & Delivery",
+      "Every finished product is checked for quality and prepared carefully for safe delivery or collection.",
+      "✓",
+    ],
+  ];
+
+  // Automatic cycle loop every 5 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveWork((prev) => (prev + 1) % workShowcase.length);
+    }, 6000);
+
+    return () => clearInterval(interval);
+  }, [workShowcase.length]);
+
+  // Determine the 4 items to display in the 2x2 grid based on activeWork window rotation
+  // Ensures when index reaches near the end, it wraps smoothly.
+  const getVisibleGridItems = () => {
+    let startIndex = activeWork - 1;
+    if (startIndex < 0) startIndex = workShowcase.length - 1;
+
+    const items = [];
+    for (let i = 0; i < 4; i++) {
+      const index = (startIndex + i) % workShowcase.length;
+      items.push({ ...workShowcase[index], originalIndex: index });
+    }
+    return items;
+  };
+
+  const visibleGridItems = getVisibleGridItems();
+
   return (
-    <div className="bg-slate-50 text-slate-800 antialiased font-sans min-h-screen">
+    <div className="bg-slate-50 text-slate-900 min-h-screen overflow-x-hidden">
 
-      {/* Hero Section */}
-      <section className="relative overflow-hidden bg-slate-900 text-white py-32 px-6">
-        {/* Subtle grid pattern background accent */}
-        <div className="absolute inset-0 opacity-10 bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:24px_24px]"></div>
-        
-        <div className="relative max-w-5xl mx-auto text-center">
-          <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 mb-6 uppercase tracking-wider">
-            Industrial Grade Manufacturing
-          </span>
-          
-          <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight mb-6">
-            YASSH ENTERPRISES
-          </h1>
+      {/* HERO */}
+      <section className="relative overflow-hidden bg-slate-950">
+        <img
+          src="https://res.cloudinary.com/cnxvqb67/image/upload/v1789633355/premium_photo-1682144783087-fe52612b1f0d.avif"
+          alt="Yassh Enterprises metal fabrication"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
 
-          <p className="text-xl md:text-2xl text-slate-300 font-medium mb-4">
-            All Kinds of Tin Work & Sheet Metal Manufacturing
-          </p>
+        <div className="absolute inset-0 bg-slate-950/75" />
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-950/60 to-slate-950/20" />
 
-          <p className="text-sm md:text-base text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed">
-            Roofing Sheets • Galvanized Sheets • Rain Gutters (Parnala) • Custom Heavy Fabrication
-          </p>
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-16 sm:py-20 lg:py-24">
+          <div className="max-w-4xl">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-indigo-400/30 bg-indigo-500/10 mb-5">
+              <span className="w-2 h-2 bg-indigo-400 rounded-full animate-pulse" />
+              <span className="text-indigo-300 text-[9px] sm:text-xs font-bold uppercase tracking-[0.15em]">
+                From Family Legacy to Modern Fabrication
+              </span>
+            </div>
 
-          <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
-            <Link
-              to="/products"
-              className="w-full sm:w-auto inline-flex justify-center items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-8 py-4 rounded-xl shadow-lg transition-all duration-200 text-sm"
-            >
-              Explore Products
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-              </svg>
-            </Link>
-            
-            <a
-              href="#contact"
-              className="w-full sm:w-auto inline-flex justify-center items-center px-8 py-4 rounded-xl border border-slate-700 hover:border-slate-500 text-slate-300 hover:text-white transition-all duration-200 text-sm font-semibold"
-            >
-              Get a Quote
-            </a>
+            <h1 className="text-white text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black uppercase leading-[0.95] tracking-tight">
+              Crafted <span className="text-indigo-400">Metal.</span>
+              <br />
+              Built to Last.
+            </h1>
+
+            <p className="text-slate-300 text-sm sm:text-base md:text-lg max-w-2xl leading-7 mt-6">
+              Custom metal boxes, storage solutions and sheet-metal fabrication
+              for businesses, workshops and industrial requirements.
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-3 mt-7">
+              <Link
+                to="/products"
+                className="flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-7 py-3.5 rounded-xl font-bold text-sm transition"
+              >
+                Browse Products →
+              </Link>
+
+              <Link
+                to="/contact"
+                className="flex items-center justify-center border border-white/25 bg-white/5 hover:bg-white/10 text-white px-7 py-3.5 rounded-xl font-bold text-sm transition"
+              >
+                Request Custom Work
+              </Link>
+            </div>
           </div>
         </div>
-      </section>
 
-      {/* Why Choose Us Section */}
-      <section className="max-w-7xl mx-auto py-24 px-6">
-        <div className="text-center max-w-2xl mx-auto mb-16">
-          <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900">
-            Why Choose Us
-          </h2>
-          <p className="text-slate-500 text-sm mt-2">
-            Engineered for durability, tailored for your architectural requirements.
-          </p>
-        </div>
-
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {/* Card 1 */}
-          <div className="bg-white border border-slate-100 shadow-sm rounded-2xl p-6 hover:-translate-y-1 hover:shadow-md transition-all duration-300">
-            <div className="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center mb-5">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-              </svg>
-            </div>
-            <h3 className="text-lg font-bold text-slate-950 mb-2">
-              Quality Material
-            </h3>
-            <p className="text-slate-500 text-sm leading-relaxed">
-              Premium grade corrosion-resistant roofing sheets and structural metals built to last.
-            </p>
-          </div>
-
-          {/* Card 2 */}
-          <div className="bg-white border border-slate-100 shadow-sm rounded-2xl p-6 hover:-translate-y-1 hover:shadow-md transition-all duration-300">
-            <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center mb-5">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-            </div>
-            <h3 className="text-lg font-bold text-slate-950 mb-2">
-              Custom Fabrication
-            </h3>
-            <p className="text-slate-500 text-sm leading-relaxed">
-              Customized widths, profiles, and bending matching your precise blueprint parameters.
-            </p>
-          </div>
-
-          {/* Card 3 */}
-          <div className="bg-white border border-slate-100 shadow-sm rounded-2xl p-6 hover:-translate-y-1 hover:shadow-md transition-all duration-300">
-            <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center mb-5">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <h3 className="text-lg font-bold text-slate-950 mb-2">
-              Affordable Pricing
-            </h3>
-            <p className="text-slate-500 text-sm leading-relaxed">
-              Highly optimized operational cost structures passing savings straight down to you.
-            </p>
-          </div>
-
-          {/* Card 4 */}
-          <div className="bg-white border border-slate-100 shadow-sm rounded-2xl p-6 hover:-translate-y-1 hover:shadow-md transition-all duration-300">
-            <div className="w-12 h-12 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center mb-5">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
-            </div>
-            <h3 className="text-lg font-bold text-slate-950 mb-2">
-              Fast Delivery
-            </h3>
-            <p className="text-slate-500 text-sm leading-relaxed">
-              On-schedule order processing guarantees rapid transit and minimal project downtime.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Products Section */}
-      <section className="bg-white border-y border-slate-100 py-24 px-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900">
-              Our Core Offerings
-            </h2>
-            <p className="text-slate-500 text-sm mt-2">
-              Explore some of our structural product standards below.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {/* Product 1 */}
-            <div className="bg-slate-50 border border-slate-100 rounded-2xl p-8 hover:bg-slate-100/50 transition-colors flex flex-col justify-between">
-              <div>
-                <span className="text-xs font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-full uppercase">Popular</span>
-                <h3 className="text-xl font-bold text-slate-900 mt-4 mb-3">
-                  Color Roofing Sheet
-                </h3>
-                <p className="text-slate-500 text-sm leading-relaxed">
-                  Highly weather-resistant coated roofing sheets available in a wide selection of RAL colors, sizes, and architectural designs.
+        <div className="relative z-20 border-t border-white/10 bg-slate-950/95">
+          <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4">
+            {[
+              ["26+", "Years Legacy"],
+              ["CUSTOM", "Fabrication"],
+              ["SMALL", "To Bulk Orders"],
+              ["PUNE", "Industrial Hub"],
+            ].map(([value, label]) => (
+              <div
+                key={label}
+                className="px-4 sm:px-6 py-4 sm:py-5 border-r border-white/10 last:border-r-0"
+              >
+                <p className="text-indigo-400 text-lg sm:text-2xl font-black">
+                  {value}
+                </p>
+                <p className="text-slate-400 text-[8px] sm:text-[9px] uppercase tracking-[0.15em] mt-1">
+                  {label}
                 </p>
               </div>
-              <div className="mt-8 pt-4 border-t border-slate-200/50 flex justify-end">
-                <Link to="/products" className="text-xs font-semibold text-slate-700 hover:text-slate-900 flex items-center gap-1">
-                  Learn Specs →
-                </Link>
-              </div>
-            </div>
-
-            {/* Product 2 */}
-            <div className="bg-slate-50 border border-slate-100 rounded-2xl p-8 hover:bg-slate-100/50 transition-colors flex flex-col justify-between">
-              <div>
-                <span className="text-xs font-bold text-slate-500 bg-slate-200/50 px-2.5 py-1 rounded-full uppercase">Standard</span>
-                <h3 className="text-xl font-bold text-slate-900 mt-4 mb-3">
-                  Galvanized Sheet (GI)
-                </h3>
-                <p className="text-slate-500 text-sm leading-relaxed">
-                  Heavy-duty, corrosion-proof zinc galvanized sheets, perfectly suited for demanding industrial enclosures and residential installations.
-                </p>
-              </div>
-              <div className="mt-8 pt-4 border-t border-slate-200/50 flex justify-end">
-                <Link to="/products" className="text-xs font-semibold text-slate-700 hover:text-slate-900 flex items-center gap-1">
-                  Learn Specs →
-                </Link>
-              </div>
-            </div>
-
-            {/* Product 3 */}
-            <div className="bg-slate-50 border border-slate-100 rounded-2xl p-8 hover:bg-slate-100/50 transition-colors flex flex-col justify-between">
-              <div>
-                <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-full uppercase">Utility</span>
-                <h3 className="text-xl font-bold text-slate-900 mt-4 mb-3">
-                  Rain Gutter (Parnala)
-                </h3>
-                <p className="text-slate-500 text-sm leading-relaxed">
-                  Custom-molded, leak-proof rainwater drainage components tailored to prevent water accumulation across buildings.
-                </p>
-              </div>
-              <div className="mt-8 pt-4 border-t border-slate-200/50 flex justify-end">
-                <Link to="/products" className="text-xs font-semibold text-slate-700 hover:text-slate-900 flex items-center gap-1">
-                  Learn Specs →
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Reviews Section */}
-      <section className="max-w-4xl mx-auto py-24 px-6">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-extrabold tracking-tight text-slate-900">
-            Trusted by the Community
-          </h2>
-        </div>
-
-        <div className="bg-white border border-slate-100 shadow-sm rounded-2xl p-8 md:p-12 text-center relative">
-          {/* Visual double quote decoration */}
-          <span className="absolute top-4 left-6 text-6xl text-slate-100 select-none font-serif">“</span>
-          
-          <div className="flex justify-center gap-1 mb-6">
-            {[...Array(5)].map((_, i) => (
-              <svg key={i} className="w-6 h-6 text-amber-400 fill-current" viewBox="0 0 20 20">
-                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-              </svg>
             ))}
           </div>
+        </div>
+      </section>
 
-          <p className="text-lg text-slate-600 italic leading-relaxed max-w-2xl mx-auto">
-            "Excellent quality materials and highly reliable timelines. We ordered custom galvanizing and gutter fixtures for our local warehouse project, and everything was shaped precisely to spec."
-          </p>
+      {/* WHY YASSH */}
+      <section className="bg-white pt-8 sm:pt-10 lg:pt-12 pb-16 sm:pb-20 lg:pb-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">
+          <SectionHeading
+            label="Why Yassh Enterprises"
+            title={
+              <>
+                Metal Work Built Around
+                <span className="text-indigo-600"> Your Requirement</span>
+              </>
+            }
+            text="Combining family experience in metal craftsmanship with practical fabrication and convenient online ordering."
+          />
 
-          <div className="mt-8 flex items-center justify-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-slate-100 font-bold text-slate-600 flex items-center justify-center">
-              RC
-            </div>
-            <div className="text-left">
-              <h4 className="font-bold text-slate-900 text-sm">Raman Chawla</h4>
-              <p className="text-slate-400 text-xs">Project Manager, local build site</p>
-            </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+            {features.map(([number, title, text]) => (
+              <div
+                key={number}
+                className="group bg-slate-50 border border-slate-200 rounded-2xl p-6 sm:p-7 hover:-translate-y-2 hover:shadow-xl hover:border-indigo-200 transition-all duration-300"
+              >
+                <div className="flex justify-between">
+                  <span className="w-11 h-11 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-black text-sm">
+                    {number}
+                  </span>
+                  <span className="text-slate-300 group-hover:text-indigo-300 text-2xl font-black">
+                    +
+                  </span>
+                </div>
+
+                <h3 className="text-lg font-bold mt-6">{title}</h3>
+                <p className="text-slate-500 text-sm leading-6 mt-3">
+                  {text}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Call to Action Footer Banner */}
-      <section id="contact" className="bg-slate-900 text-white py-16 px-6 border-t border-slate-800">
-        <div className="max-w-4xl mx-auto text-center space-y-6">
-          <h2 className="text-2xl md:text-3xl font-bold tracking-tight">
-            Have Custom Tin Work or Fabrication Requirements?
+      {/* OUR STORY */}
+      <section className="bg-slate-50 pt-6 sm:pt-8 lg:pt-10 pb-16 sm:pb-20 lg:pb-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+
+            {/* IMAGE */}
+            <div className="relative">
+              <div className="overflow-hidden rounded-3xl border border-slate-200 shadow-xl">
+                <img
+                  src="https://res.cloudinary.com/cnxvqb67/image/upload/v1789466619/WhatsApp_Image_2026-09-15_at_1.32.54_PM.jpg"
+                  alt="Yassh Enterprises metal fabrication"
+                  className="w-full h-[350px] sm:h-[450px] object-cover"
+                />
+              </div>
+
+              {/* 26 YEARS BADGE */}
+              <div className="absolute -bottom-5 -right-3 sm:right-6 bg-white rounded-2xl shadow-xl border border-slate-200 px-6 py-4">
+                <p className="text-indigo-600 text-3xl font-black">
+                  26+
+                </p>
+                <p className="text-slate-500 text-xs font-bold uppercase tracking-wider">
+                  Years of Experience
+                </p>
+              </div>
+            </div>
+
+            {/* STORY */}
+            <div>
+              <span className="text-indigo-600 text-sm sm:text-base font-bold uppercase tracking-[0.25em]">
+                Our Story
+              </span>
+
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight mt-4 leading-tight">
+                26 Years of
+                <span className="text-indigo-600"> Metal Craftsmanship</span>
+              </h2>
+
+              <p className="text-slate-500 text-sm sm:text-base leading-7 mt-5">
+                Built on more than 26 years of experience, Yassh Enterprises
+                brings together traditional craftsmanship and practical modern
+                fabrication.
+              </p>
+
+              <p className="text-slate-500 text-sm sm:text-base leading-7 mt-4">
+                What started as a family legacy has grown into a trusted
+                fabrication business serving businesses, workshops and industrial
+                requirements with custom metal solutions.
+              </p>
+
+              <p className="text-slate-500 text-sm sm:text-base leading-7 mt-4">
+                From custom metal boxes and storage solutions to sheet-metal
+                fabrication, every project is approached with attention to
+                dimensions, material, finish and practical use.
+              </p>
+
+              <div className="flex flex-wrap gap-3 mt-7">
+                <div className="px-4 py-3 rounded-xl bg-white border border-slate-200">
+                  <p className="text-indigo-600 font-black text-lg">26+</p>
+                  <p className="text-slate-500 text-xs uppercase tracking-wider">
+                    Years Legacy
+                  </p>
+                </div>
+
+                <div className="px-4 py-3 rounded-xl bg-white border border-slate-200">
+                  <p className="text-indigo-600 font-black text-lg">
+                    Custom
+                  </p>
+                  <p className="text-slate-500 text-xs uppercase tracking-wider">
+                    Fabrication
+                  </p>
+                </div>
+
+                <div className="px-4 py-3 rounded-xl bg-white border border-slate-200">
+                  <p className="text-indigo-600 font-black text-lg">
+                    Quality
+                  </p>
+                  <p className="text-slate-500 text-xs uppercase tracking-wider">
+                    Focused
+                  </p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* WORKSHOWCASE WITH VIBRANT TRANSPARENT BACKGROUND CROSSFADE (4 ROTATING IMAGES GRID) */}
+      <section className="bg-slate-950 py-10 sm:py-14 lg:py-16 text-white relative overflow-hidden">
+
+        {/* Dynamic Animated Transparent Background Crossfade */}
+        {workShowcase.map((item, index) => (
+          <div
+            key={item.id}
+            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out pointer-events-none ${activeWork === index ? "opacity-35 scale-100" : "opacity-0 scale-105"
+              }`}
+          >
+            <img
+              src={item.image}
+              alt=""
+              className="w-full h-full object-cover filter blur-[2px]"
+            />
+          </div>
+        ))}
+
+        {/* Lighter dark overlay to let the background image shine through cleanly */}
+        <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-[2px]" />
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 relative z-10">
+
+          <div className="grid lg:grid-cols-12 gap-6 lg:gap-8 items-center">
+
+            {/* Left Column: Descriptive Content & Active Summary */}
+            <div className="lg:col-span-5">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/20 border border-indigo-500/40 text-indigo-300 text-xs font-semibold tracking-wider uppercase mb-3 backdrop-blur-md">
+                Our Capabilities
+              </div>
+
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black uppercase tracking-tight">
+                Explore Our <br />
+                <span className="text-indigo-400">Metal Work</span>
+              </h2>
+
+              <p className="text-slate-300 text-sm sm:text-base leading-relaxed mt-4">
+                {workShowcase[activeWork].description}
+              </p>
+
+              <div className="mt-6 p-5 rounded-2xl bg-slate-900/60 border border-white/15 backdrop-blur-md shadow-xl">
+                <span className="text-indigo-400 font-mono text-xs font-bold uppercase tracking-wider">
+                  {workShowcase[activeWork].highlight}
+                </span>
+                <h4 className="text-white text-xl font-bold mt-1">
+                  {workShowcase[activeWork].title}
+                </h4>
+              </div>
+
+              <div className="mt-7 flex items-center gap-4">
+                <Link
+                  to="/products"
+                  className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-3.5 rounded-xl font-bold text-sm transition shadow-lg shadow-indigo-600/30"
+                >
+                  View Products Catalog →
+                </Link>
+              </div>
+            </div>
+
+            {/* Right Column: Exactly 2x2 Rotating Grid (4 Items) */}
+            <div className="lg:col-span-7 grid sm:grid-cols-2 gap-4">
+              {visibleGridItems.map((item) => {
+                const isActive = activeWork === item.originalIndex;
+                return (
+                  <div
+                    key={item.id}
+                    onClick={() => setActiveWork(item.originalIndex)}
+                    className={`cursor-pointer group relative h-56 sm:h-64 rounded-2xl overflow-hidden border transition-all duration-500 bg-slate-900/80 ${isActive
+                      ? "border-indigo-500 shadow-2xl shadow-indigo-950/80 scale-[1.02] ring-2 ring-indigo-500/50"
+                      : "border-white/15 hover:border-white/40 opacity-75 hover:opacity-100"
+                      }`}
+                  >
+                    <img
+                      src={item.image}
+                      alt={item.title}
+                      className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent" />
+
+                    {/* Top Tag */}
+                    <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
+
+
+                    </div>
+
+                    {/* Bottom Info */}
+                    <div className="absolute bottom-3 left-3 right-3">
+                      <p className="text-[10px] uppercase font-bold text-slate-300 tracking-wider">
+                        {item.category}
+                      </p>
+                      <h3 className="text-white text-base font-bold mt-0.5">
+                        {item.title}
+                      </h3>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      {/* HOW WE WORK */}
+      <section className="bg-white pt-8 sm:pt-10 lg:pt-12 pb-16 sm:pb-20 lg:pb-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">
+          <SectionHeading
+            label="How We Work"
+            title={
+              <>
+                Simple Process,
+                <span className="text-indigo-600"> Reliable Execution</span>
+              </>
+            }
+            text="From understanding your requirement to completing the finished product, we keep the process simple and practical."
+          />
+
+          <div className="grid md:grid-cols-3 gap-4 sm:gap-5">
+            {process.map(([number, title, text, icon]) => (
+              <div
+                key={number}
+                className="group bg-slate-50 border border-slate-200 rounded-2xl p-6 sm:p-7 hover:-translate-y-2 hover:shadow-xl hover:border-indigo-200 transition-all duration-300"
+              >
+                <div className="flex justify-between">
+                  <span className="w-11 h-11 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-black">
+                    {number}
+                  </span>
+                  <span className="text-slate-300 group-hover:text-indigo-300 text-2xl font-black">
+                    {icon}
+                  </span>
+                </div>
+
+                <h3 className="text-lg font-bold mt-6">{title}</h3>
+                <p className="text-slate-500 text-sm leading-6 mt-3">
+                  {text}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="bg-[#0f172b] py-12 sm:py-14 text-center text-white">
+        <div className="max-w-3xl mx-auto px-4">
+          <span className="text-[#7C86FF] text-[10px] font-bold uppercase tracking-[0.3em]">
+            Start Your Requirement
+          </span>
+
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-black mt-2">
+            Need Custom <span className="text-[#7C86FF]">Metal Work?</span>
           </h2>
-          <p className="text-slate-400 text-sm max-w-xl mx-auto">
-            Get in touch with our operations team directly. We support customized widths, custom tooling, and bulk commercial order fulfillment.
+
+          <p className="text-slate-300 max-w-md mx-auto mt-3 text-xs md:text-sm leading-relaxed">
+            Tell us your required size, material, quantity or application.
+            We can discuss your requirement and options.
           </p>
-          <div className="pt-2">
-            <a
-              href="mailto:yasshenterprises@example.com"
-              className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-6 py-3.5 rounded-xl shadow-md transition text-sm"
+
+          <div className="flex flex-col sm:flex-row justify-center gap-3 mt-6">
+            <Link
+              to="/contact"
+              className="bg-[#4F39F6] hover:bg-[#5D49F7] px-6 py-3 rounded-xl font-bold text-xs transition"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-              </svg>
-              yasshenterprises@example.com
-            </a>
+              Request a Quote →
+            </Link>
+
+            <Link
+              to="/products"
+              className="border border-[#33415f] hover:border-[#4F39F6] px-6 py-3 rounded-xl font-bold text-xs transition"
+            >
+              Browse Products
+            </Link>
           </div>
         </div>
       </section>
+    </div>
+  );
+}
 
+function SectionHeading({ label, title, text }) {
+  return (
+    <div className="max-w-3xl mx-auto text-center mb-10 sm:mb-12">
+      <span className="text-indigo-600 text-base sm:text-lg font-bold uppercase tracking-[0.25em]">
+        {label}
+      </span>
+
+      <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight mt-4 leading-tight">
+        {title}
+      </h2>
+
+      <p className="text-slate-500 text-sm md:text-base mt-5 leading-7 max-w-2xl mx-auto">
+        {text}
+      </p>
     </div>
   );
 }
