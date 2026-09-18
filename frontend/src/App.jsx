@@ -2,6 +2,7 @@ import { Routes, Route } from "react-router-dom";
 
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+import ScrollToTop from "./components/ScrollToTop";
 
 import Home from "./pages/Home";
 import About from "./pages/About";
@@ -25,12 +26,17 @@ import Reports from "./admin/pages/Reports";
 function App() {
   return (
     <div className="flex flex-col min-h-screen bg-slate-50/50 selection:bg-indigo-500 selection:text-white">
+
+      {/* Automatically scroll to top whenever the page changes */}
+      <ScrollToTop />
+
       {/* Navigation Header */}
       <Header />
 
-      {/* Main Content Area (With sticky-footer flex-grow) */}
+      {/* Main Content Area */}
       <main className="flex-grow">
         <Routes>
+
           {/* Public & Customer Routes */}
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
@@ -47,32 +53,38 @@ function App() {
 
           {/* Admin Back-Office Routes */}
           <Route path="/admin" element={<AdminDashboard />} />
+
           <Route
             path="/admin/add-product"
             element={<AddProduct />}
           />
-          {/* Added Edit Product Route */}
+
           <Route
             path="/admin/edit-product/:id"
             element={<AddProduct />}
           />
+
           <Route
             path="/admin/products"
             element={<ManageProducts />}
           />
+
           <Route
             path="/admin/orders"
             element={<ManageOrders />}
           />
+
           <Route
             path="/admin/reports"
             element={<Reports />}
           />
+
         </Routes>
       </main>
 
       {/* Site Footer */}
       <Footer />
+
     </div>
   );
 }
